@@ -26,4 +26,4 @@ def initial_value_solution(t):
 IVPTuple = namedtuple("IVPTuple", ["ODEFunction", "SolutionFunction", "y0"])
 
 # Named tuple that contains the problem, solution, and initial value for the stiff IVP implemented above
-STIFF_IVP = IVPTuple(ODEFunction=initial_value_problem, SolutionFunction=initial_value_solution, y0=0.0)
+STIFF_IVP = IVPTuple(ODEFunction=initial_value_problem, SolutionFunction=initial_value_solution, y0=1.0)
