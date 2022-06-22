@@ -28,7 +28,7 @@ def main(start_t, end_t, ivp=stiff_functions.STIFF_IVP, integrators=INTEGRATORS)
     for integrator in integrators: # Iterate over each specified integrator...
         print("Using {0}...".format(integrator))
         
-        solution = scipy.integrate.solve_ivp(ivp[0], t_span=(start_t, end_t), y0=(ivp[2],), method=integrator) # Perform the integration
+        solution = scipy.integrate.solve_ivp(ivp[0], t_span=(start_t, end_t), y0=ivp[2], method=integrator) # Perform the integration
         
         if solution.success: # If integration was successful...
             print("Integrated Successfully (SciPy message: '{0}').".format(solution.message))
