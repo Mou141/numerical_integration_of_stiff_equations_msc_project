@@ -7,40 +7,48 @@ import stiff_functions # See stiff_functions.py in same directory
 # List of SciPy integrators to check
 INTEGRATORS = ["Radau", "BDF"]
 
-def main(start_t, end_t, ivp=stiff_functions.STIFF_IVP, integrators=INTEGRATORS):
-    """Takes an initial value problem, integrates it with the specified SciPy compatible integrators between the specified values,
-    and produces a graph of the resulting integrations and the analytical solutoon for comparison.
+def test_integrators(end_t, ivp, integrators=INTEGRATORS, dense_output=False):
+    """For each of the specified stiff integrators available with SciPy, integrate the initial value problem specified from t0 to end_t.
     
-    arguments:
-        start_t: The start value to integrate from.
-        end_t: The end value to integrate to.
-        ivp, optional: A tuple containing the ode to integrate, the analytical solution to the IVP, and the given initial value (in that order). Defaults to the stiff IVP specified in stiff_functions.py.
-        integrators, optional: A list of SciPy integrators to use to integrate this problem. Defaults to list specified in the INTEGRATORS global variable in this file."""
-    
-    plt.axes(xlabel="t", ylabel="y") # Label the axes
-    
-    t = np.linspace(start_t, end_t, 10000) # Create a linearly spaced array of values between start_t and end_t to plot the exact solution between
-    y_exact = (ivp[1])(t) # Apply the solution function over the specified range
-    plt.plot(t, y_exact, label="Exact") # Plot the exact solution with matplotlib.pyplot
-    
-    print("Integrating between t={0} and t={1}, y(0) = {2} with integrators: {3}.".format(start_t, end_t, ivp[2], ", ".join(integrators)))
-    
-    for integrator in integrators: # Iterate over each specified integrator...
-        print("Using {0}...".format(integrator))
+    Arguments:
+        end_t: End of range over which to integrate (must be > t_0 specified in ivp)
+        ivp: A tuple specifying the initial value problem to integrate (must contain the same information in the same order as stiff_functions.IVPTuple, but need not be an instance of this class).
+        integrators, optional: A list of methods with which to attempt to solve the initial value problem (defaults to the contents of the INTEGRATORS global variable).
+        dense_output, optional: Whether to ask SciPy to compute a continuous solution (defaults to False).
         
-        solution = scipy.integrate.solve_ivp(ivp[0], t_span=(start_t, end_t), y0=ivp[2], method=integrator) # Perform the integration
+    Returns:
+        A dictionary of the integrators and the solution objects produced by scipy.integrate.solve_ivp"""
+    
+    ivp = stiff_functions.IVPTuple._make(ivp) # Convert ivp to an IVPTuple instance if it's another kind of iterable
+    
+    out = {} # Empty dictionary to contain solutions
+    
+    for method in integrators: # For each method specified...
+        solution = scipy.integrate.solve_ivp(fun=ivp.ODEFunction, t_span=(ivp.t0, end_t), y0=ivp.y0, method=method, dense_output=dense_output) # Attempt to find a solution
+        out[method] = solution # Store that solution in the output dictionary
         
+    return out
+
+def main():
+    end_t = 100.0 # End point of integration
+    
+    print("Testing stiff initial value problem for integrators: {0}...".format(", ".join(INTEGRATORS)))
+    
+    results = test_integrators(end_t, stiff_functions.STIFF_IVP) # Attempt to integrate between 0 and 100 for the stiff IVP
+    
+    for method, solution in results.items(): # Iterate over the methods and their solution objects...
         if solution.success: # If integration was successful...
-            print("Integrated Successfully (SciPy message: '{0}').".format(solution.message))
-            plt.plot(solution.t, solution.y, label=integrator) # Plot the result
-        
-        else: # If integration was successful...
-            print("Integration failed (SciPy message: {0}).".format(solution.message))
+            print("Method '{0}' completed successfully.".format(method))
+            plt.plot(solution.t, solution.y, label=method) # Plot the solution
+            
+        else: # If integration failed...
+            print("Method '{0}' failed.".format(method))
     
+    # Plot the exact solution
+    t = np.linspace(ivp.t0, end_t, 10000)
+    y_exact = ivp.SolutionFunction(t)
+    plt.plot(t, y_exact, label="Exact Solution")
+    
+    plt.axes(xlabel="t", ylabel="y") # Label graph axes
     plt.legend(loc="best") # Add a legend to the graph
     plt.show() # Display the graph
-
-if __name__ == "__main__": # If python file being executed directly...
-    main(0.0, 1000.0)
-
-# To test with other values, use interactive interpreter and load file as python module
