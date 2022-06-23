@@ -24,7 +24,7 @@ def test_integrators(end_t, ivp, integrators=INTEGRATORS, dense_output=False):
     out = {} # Empty dictionary to contain solutions
     
     for method in integrators: # For each method specified...
-        solution = scipy.integrate.solve_ivp(fun=ivp.ODEFunction, t_span=(ivp.t0, end_t), y0=ivp.y0, method=method, dense_output=dense_output) # Attempt to find a solution
+        solution = scipy.integrate.solve_ivp(fun=ivp.ODEFunction, t_span=(ivp.t0, end_t), y0=np.array([ivp.y0]), method=method, dense_output=dense_output) # Attempt to find a solution
         out[method] = solution # Store that solution in the output dictionary
         
     return out
