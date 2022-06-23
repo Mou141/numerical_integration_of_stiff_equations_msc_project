@@ -12,7 +12,7 @@ def initial_value_problem(t, y):
         returns: -15 * y
     """
     
-    return np.array([-15.0 * y[0]])
+    return -15.0 * y
 
 # This is the solution to the above problem
 def initial_value_solution(t):
