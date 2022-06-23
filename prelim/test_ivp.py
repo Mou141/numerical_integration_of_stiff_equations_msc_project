@@ -46,7 +46,7 @@ def main():
     
     # Plot the exact solution
     t = np.linspace(stiff_functions.STIFF_IVP.t0, end_t, 10000)
-    y_exact = ivp.SolutionFunction(t)
+    y_exact = stiff_functions.STIFF_IVP.SolutionFunction(t)
     plt.plot(t, y_exact, label="Exact Solution")
     
     plt.axes(xlabel="t", ylabel="y") # Label graph axes
