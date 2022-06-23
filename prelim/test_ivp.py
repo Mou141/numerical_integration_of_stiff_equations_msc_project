@@ -45,7 +45,7 @@ def main():
             print("Method '{0}' failed.".format(method))
     
     # Plot the exact solution
-    t = np.linspace(ivp.t0, end_t, 10000)
+    t = np.linspace(stiff_functions.STIFF_IVP.t0, end_t, 10000)
     y_exact = ivp.SolutionFunction(t)
     plt.plot(t, y_exact, label="Exact Solution")
     
