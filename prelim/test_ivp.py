@@ -52,3 +52,6 @@ def main():
     plt.axes(xlabel="t", ylabel="y") # Label graph axes
     plt.legend(loc="best") # Add a legend to the graph
     plt.show() # Display the graph
+
+if __name__ == "__main__":
+    main()
