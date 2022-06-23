@@ -36,6 +36,8 @@ def main():
     
     results = test_integrators(end_t, stiff_functions.STIFF_IVP) # Attempt to integrate between 0 and 100 for the stiff IVP
     
+    plt.axes(xlabel="t", ylabel="y") # Label graph axes
+    
     for method, solution in results.items(): # Iterate over the methods and their solution objects...
         if solution.success: # If integration was successful...
             print("Method '{0}' completed successfully.".format(method))
@@ -49,7 +51,6 @@ def main():
     y_exact = stiff_functions.STIFF_IVP.SolutionFunction(t)
     plt.plot(t, y_exact, label="Exact Solution")
     
-    plt.axes(xlabel="t", ylabel="y") # Label graph axes
     plt.legend(loc="best") # Add a legend to the graph
     plt.show() # Display the graph
 
