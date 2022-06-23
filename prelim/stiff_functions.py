@@ -22,8 +22,8 @@ def initial_value_solution(t):
     
     return np.exp(-15.0 * t)
 
-# Named tuple to contain IVP problem, solution, and initial value
-IVPTuple = namedtuple("IVPTuple", ["ODEFunction", "SolutionFunction", "y0"])
+# Named tuple to contain IVP problem, solution, initial value, and start position for integration (i.e. the value of t0 where y=y0)
+IVPTuple = namedtuple("IVPTuple", ["ODEFunction", "SolutionFunction", "y0", "t0"])
 
 # Named tuple that contains the problem, solution, and initial value for the stiff IVP implemented above
-STIFF_IVP = IVPTuple(ODEFunction=initial_value_problem, SolutionFunction=initial_value_solution, y0=1.0)
+STIFF_IVP = IVPTuple(ODEFunction=initial_value_problem, SolutionFunction=initial_value_solution, y0=1.0, t0=0.0)
