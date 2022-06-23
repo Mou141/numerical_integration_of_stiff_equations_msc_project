@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt # For plotting graphs
 import stiff_functions # See stiff_functions.py in same directory
 
 # List of SciPy integrators to check
-INTEGRATORS = ["Radau", "BDF"]
+INTEGRATORS = ["Radau", "BDF", "LSODA"]
 
 def test_integrators(end_t, ivp, integrators=INTEGRATORS, dense_output=False):
     """For each of the specified stiff integrators available with SciPy, integrate the initial value problem specified from t0 to end_t.
