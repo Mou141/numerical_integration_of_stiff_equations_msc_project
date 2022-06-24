@@ -26,7 +26,7 @@ def initial_value_solution(t):
     return np.exp(-15.0 * t)
 
 # Named tuple that contains the problem, solution, and initial value for the stiff IVP implemented above
-STIFF_IVP = IVPTuple(ODEFunction=initial_value_problem, SolutionFunction=initial_value_solution, y0=1.0, t0=0.0)
+STIFF_IVP = IVPTuple(ODEFunction=initial_value_problem, SolutionFunction=initial_value_solution, y0=np.array([1.0]), t0=0.0)
 
 # Another stiff IVP with an exact solution is given in Numerical Analysis by Burden et. al.
 def initial_value_problem2(t, y):
