@@ -43,7 +43,7 @@ def initial_value_problem2(t, y):
 
 # The analytical solution to the above initial value problem
 def initial_value_solution2(t):
-    y1 = (2.0 * np.exp(-3.0 * t)) - np.exp(-39.0 * t) + ((1.0/3.0) * no.cos(t))
+    y1 = (2.0 * np.exp(-3.0 * t)) - np.exp(-39.0 * t) + ((1.0/3.0) * np.cos(t))
     y2 = (-np.exp(-3.0 * t)) + (2.0 * np.exp(-39.0 * t)) - ((1.0/3.0) * np.cos(t))
     
     return np.array([y1, y2])
