@@ -14,7 +14,7 @@ def main():
     figure, ax = plt.subplots(2, 1, sharex=True) # Create two separate plots, one above the other, that share an x-axis but have different y-axes
     
     # Label the axes
-    ax[0].set_xlabel("t")
+    ax[1].set_xlabel("t")
     ax[0].set_ylabel("y1")
     ax[1].set_ylabel("y2")
     
@@ -22,7 +22,7 @@ def main():
         if solution.success: # If this integration method succeeded...
             print("Method '{0}' completed successfully.".format(method))
             ax[0].plot(solution.t, solution.y[0], label=method) # Plot y1
-            ax[1].plot(solution.t, solution.y[1], label=method) # Plot y2
+            ax[1].plot(solution.t, solution.y[1]) # Plot y2
             
         else: # If this method failed...
             print("Method '{0}' failed.".format(method))
@@ -31,7 +31,7 @@ def main():
     t = np.linspace(stiff_functions.STIFF_IVP2.t0, end_t, 10000)
     y = stiff_functions.STIFF_IVP2.SolutionFunction(t)
     ax[0].plot(t, y[0], label="Exact")
-    ax[1].plot(t, y[1], label="Exact")
+    ax[1].plot(t, y[1])
     
     figure.legend(loc="upper right") # Add a legend to the graph
     
