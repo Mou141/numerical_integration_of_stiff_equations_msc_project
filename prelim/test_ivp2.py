@@ -33,7 +33,7 @@ def main():
     ax[0].plot(t, y[0], label="Exact")
     ax[1].plot(t, y[1], label="Exact")
     
-    figure.legend(loc="best") # Add a legend to the graph
+    figure.legend(loc="upper right") # Add a legend to the graph
     
     plt.show() # Display the graph
 
