@@ -28,8 +28,8 @@ def main():
             print("Method '{0}' failed.".format(method))
     
     # Plot the exact solution
-    t = np.linspace(STIFF_IVP2.t0, end_t, 10000)
-    y = STIFF_IVP2.SolutionFunction(t)
+    t = np.linspace(stiff_functions.STIFF_IVP2.t0, end_t, 10000)
+    y = stiff_functions.STIFF_IVP2.SolutionFunction(t)
     ax[0].plot(t, y[0], label="Exact")
     ax[1].plot(t, y[1], label="Exact")
     
