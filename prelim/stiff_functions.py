@@ -3,10 +3,10 @@
 import numpy as np # For np.exp function
 from collections import namedtuple
 
-# Named tuple to contain IVP problem, solution, initial value, and start position for integration (i.e. the value of t0 where y=y0)
+# Named tuple to contain IVP problem, solution, initial value and start position for integration (i.e. the value of t0 where y=y0)
 IVPTuple = namedtuple("IVPTuple", ["ODEFunction", "SolutionFunction", "y0", "t0"])
 
-# There is an initial value problem which is stiff and also has an analytical solution: y'(t) = -15y(t), t >= 0, y(0) = 1. The solution being y(t) = exp(-15t)
+# There is a 1D initial value problem which is stiff and also has an analytical solution: y'(t) = -15y(t), t >= 0, y(0) = 1. The solution being y(t) = exp(-15t)
 
 # This is an implementation of the problem that will be accepted by scipy.integrate.solve_ivp
 def initial_value_problem(t, y):
@@ -17,7 +17,7 @@ def initial_value_problem(t, y):
     
     return -15.0 * y
 
-# This is the solution to the above problem
+# This is the analytical solution to the above problem
 def initial_value_solution(t):
     """The solution to the initial value problem y'(t) = -15y(t):
      
@@ -41,12 +41,12 @@ def initial_value_problem2(t, y):
     
     return np.array([y1_prime, y2_prime])
 
-# The solution to the above initial value problem
+# The analytical solution to the above initial value problem
 def initial_value_solution2(t):
     y1 = (2.0 * np.exp(-3.0 * t)) - np.exp(-39.0 * t) + ((1.0/3.0) * no.cos(t))
     y2 = (-np.exp(-3.0 * t)) + (2.0 * np.exp(-39.0 * t)) - ((1.0/3.0) * np.cos(t))
     
     return np.array([y1, y2])
 
-# Named tuple that contains the problem, solution, and initial values for the stiff IVP above
+# Named tuple that contains the problem, solution, and initial values for the stiff IVP above (the initial values being: y1(0) = 4/3, y2(0) = 2/3)
 STIFF_IVP2 = IVPTuple(ODEFunction=initial_value_problem2, SolutionFunction=initial_value_solution2, y0=np.array([(4.0/3.0), (2.0/3.0)]), t0=0.0)
