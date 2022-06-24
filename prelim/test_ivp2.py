@@ -2,7 +2,7 @@
 import matplotlib.pyplot as plt # For plotting graphs
 import numpy as np # For maths and arrays
 import stiff_functions # For the STIFF_IVP2 problem
-from test_ivp # For test_integrators and INTEGRATORS
+import test_ivp # For test_integrators and INTEGRATORS
 
 def main():
     end_t = 100.0 # End point for integration
