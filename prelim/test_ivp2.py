@@ -36,3 +36,6 @@ def main():
     figure.legend(loc="best") # Add a legend to the graph
     
     plt.show() # Display the graph
+
+if __name__ == "__main__":
+    main()
