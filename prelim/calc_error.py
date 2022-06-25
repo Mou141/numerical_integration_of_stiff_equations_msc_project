@@ -62,3 +62,18 @@ def find_integration_errors(results, ivp):
     
     figure.legend(methods, loc="upper right") # Add the methods to the legend and place the legend in the upper right
     plt.show() # Display the graphs
+
+def test_integrator_errors(end_t, ivp, integrators=test_ivp.INTEGRATORS):
+    """Applies a series of integration methods supported by scipy.integrate.solve_ivp to an initial value problem and plots the fractional errors of the results.
+        
+        Arguments:
+            end_t: The end point of the integration.
+            ivp: A tuple containing the same information as an IVPTuple instance, in the same order.
+            integrators, optional: A list of the integration methods to use (defaults to the contents of test_ivp.INTEGRATORS).
+    """
+    
+    results = test_ivp.test_integrators(end_t, ivp, integrators=integrators) # Apply the methods to the IVP
+    find_integration_errors(results, ivp) # Find the errors for each method and plot them for each dimension of the IVP
+
+if __name__ == "__main__":
+    test_integrator_errors(100.0, stiff_functions.STIFF_IVP)
