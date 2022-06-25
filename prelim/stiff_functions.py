@@ -42,7 +42,7 @@ STIFF_IVP = IVPTuple(ODEFunction=initial_value_problem, SolutionFunction=initial
 
 # Another stiff IVP with an exact solution is given in Numerical Analysis by Burden et. al.
 def initial_value_problem2(t, y):
-    """The stiff initial value problem described in Numerical Analysis by Burden et. al.
+    """The 2D stiff initial value problem described in Numerical Analysis by Burden et. al.
         
         Arguments:
             y: A 1D array of two values: y1 and y2
@@ -55,6 +55,7 @@ def initial_value_problem2(t, y):
 
 # The analytical solution to the above initial value problem
 def initial_value_solution2(t):
+    """The solution to the 2D stiff initial value problem described in Numerical Analysis by Burden et. al."""
     y1 = (2.0 * np.exp(-3.0 * t)) - np.exp(-39.0 * t) + ((1.0/3.0) * np.cos(t))
     y2 = (-np.exp(-3.0 * t)) + (2.0 * np.exp(-39.0 * t)) - ((1.0/3.0) * np.cos(t))
     
