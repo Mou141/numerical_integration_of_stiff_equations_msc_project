@@ -34,6 +34,9 @@ def find_integration_errors(results, ivp):
     
     figure, ax = plt.subplots(ivp.ndim, 1, sharex=True) # Create a plot for each dimension of the IVP with a shared x-axis
     
+    if ivp.ndim == 1: # If there is only one plot...
+        ax = [ax] # Put ax in a list so that it can be subscripted
+    
     # Label the x-axis
     ax[0].set_xlabel("t")
     
