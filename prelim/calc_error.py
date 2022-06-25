@@ -10,7 +10,7 @@ def absolute_error(y_num, y_exact):
     
 def fractional_error(y_num, y_exact):
     """Calculates the fractional error in a numerical solution by comparing with the exact solution."""
-    return absolute_error(y_num, y_exact)/y_num
+    return absolute_error(y_num, y_exact)/np.abs(y_num)
 
 def find_integration_errors(results, ivp):
     """Takes a dictionary that maps method names to results from scipy.integrate.solve_ivp and an Initial Value Problem, and plots the relative errors in that solution.
