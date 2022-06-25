@@ -22,7 +22,7 @@ def save_error(method, t, err, y):
     # File paths for the t, error, and y files
     paths = ["t_{0}.tsv".format(method), "err_{0}.tsv".format(method), "y_{0}.tsv".format(method)]
     
-    for data, path in zip([t, err, y], paths): # For each dataset and path...
+    for data, path in zip([t, err.T, y.T], paths): # For each dataset and path (transposing err and y so that they are in column format)...
         np.savetxt(path, data, delimiter="\t") # Save it to file
 
 def find_integration_errors(results, ivp, output=False):
