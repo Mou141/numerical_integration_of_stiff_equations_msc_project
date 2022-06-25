@@ -4,7 +4,19 @@ import numpy as np # For np.exp function
 from collections import namedtuple
 
 # Named tuple to contain IVP problem, solution, initial value and start position for integration (i.e. the value of t0 where y=y0)
-IVPTuple = namedtuple("IVPTuple", ["ODEFunction", "SolutionFunction", "y0", "t0"])
+class IVPTuple(namedtuple("IVPTuple", ["ODEFunction", "SolutionFunction", "y0", "t0"])):
+    """Named tuple to contain an Initial Value Problem.
+        
+        ODEFunction: The ODE function which is integrated.
+        SolutionFunction: A function providing the exact solution to the ODE.
+        y0: The value(s) of the function when t=t0.
+        t0: The value of t where y=y0."""
+    
+    # A property containing the number of dimensions of the IVP
+    @property
+    def ndim(self):
+        """The number of dimensions of the Initial Value Problem."""
+        return len(self.y0)
 
 # There is a 1D initial value problem which is stiff and also has an analytical solution: y'(t) = -15y(t), t >= 0, y(0) = 1. The solution being y(t) = exp(-15t)
 
