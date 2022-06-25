@@ -12,12 +12,6 @@ def fractional_error(y_num, y_exact):
     """Calculates the fractional error in a numerical solution by comparing with the exact solution."""
     return absolute_error(y_num, y_exact)/y_num
 
-def get_error_by_dimension(y_num, y_exact, ndim):
-    """Takes a numerical solution, an analytical solution, and the number of dimensions of the Initial Value Problem, and returns the fractional error listed by dimension."""
-    err = fractional_error(y_num, y_exact) # Calculate the fractional error
-    
-    return [err[i] for i in range(0, ndim)] # Split err into individual dimensions
-
 def find_integration_errors(results, ivp):
     """Takes a dictionary that maps method names to results from scipy.integrate.solve_ivp and an Initial Value Problem, and plots the relative errors in that solution.
         
@@ -48,7 +42,7 @@ def find_integration_errors(results, ivp):
             print("Integration succeeded for method '{0}'.".format(method))
             
             y_exact = ivp.SolutionFunction(solution.t) # Calculate the analytical solution for the t values of the numerical solution
-            err = get_error_by_dimension(solution.y, y_exact, ivp.ndim) # Get the error in the numerical solution by dimension
+            err = fractional_error(solution.y, y_exact) # Get the error in the numerical solution
             
             for i in range(0, ivp.ndim): # For each dimension of the IVP...
                 ax[i].plot(solution.t, err[i]) # Plot the error in that dimension
