@@ -12,12 +12,26 @@ def fractional_error(y_num, y_exact):
     """Calculates the fractional error in a numerical solution by comparing with the exact solution."""
     return absolute_error(y_num, y_exact)/np.abs(y_num)
 
-def find_integration_errors(results, ivp):
+def save_error(method, t, err, y):
+    """Saves three files, one for the t data (i.e. the independent variale), one for the error in the y-data, and another for the y-data.
+        
+        Arguments:
+            method: The method used for integration (used to name the files).
+            t: The independent variable data."""
+    
+    # File paths for the t, error, and y files
+    paths = ["t_{0}.tsv".format(method), "err_{0}.tsv".format(method), "y_{0}.tsv".format(method)]
+    
+    for data, path in zip([t, err, y], paths): # For each dataset and path...
+        np.savetxt(path, data, delimiter="\t") # Save it to file
+
+def find_integration_errors(results, ivp, output=False):
     """Takes a dictionary that maps method names to results from scipy.integrate.solve_ivp and an Initial Value Problem, and plots the relative errors in that solution.
         
         Arguments:
             results: Dictionary of results from scipy.integrate.solve_ivp
-            ivp: A tuple that contains the same information as stiff_functions.IVPTuple, in the same order."""
+            ivp: A tuple that contains the same information as stiff_functions.IVPTuple, in the same order.
+            output, optional: If true, error values are written to .tsv files, 3 for each method. One contains the t values, one the error values, and the other the y-values."""
     
     ivp = stiff_functions.IVPTuple._make(ivp) # If ivp isn't an IVPTuple, convert it to one
     methods = list(results.keys()) # Get the keys in the dictionary and put them into a list (need to do this as need to keep order same for iteration AND legend labelling)
@@ -44,6 +58,10 @@ def find_integration_errors(results, ivp):
             y_exact = ivp.SolutionFunction(solution.t) # Calculate the analytical solution for the t values of the numerical solution
             err = fractional_error(solution.y, y_exact) # Get the error in the numerical solution
             
+            # If output is true, save the error data to file
+            if output:
+                save_error(method, solution.t, err, solution.y)
+            
             for i in range(0, ivp.ndim): # For each dimension of the IVP...
                 ax[i].plot(solution.t, err[i]) # Plot the error in that dimension
             
@@ -69,4 +87,4 @@ def test_integrator_errors(end_t, ivp, integrators=test_ivp.INTEGRATORS):
     find_integration_errors(results, ivp) # Find the errors for each method and plot them for each dimension of the IVP
 
 if __name__ == "__main__":
-    test_integrator_errors(100.0, stiff_functions.STIFF_IVP)
+    test_integrator_errors(100.0, stiff_functions.STIFF_IVP, output=True)
