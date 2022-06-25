@@ -83,8 +83,8 @@ def test_integrator_errors(end_t, ivp, integrators=test_ivp.INTEGRATORS, output=
             integrators, optional: A list of the integration methods to use (defaults to the contents of test_ivp.INTEGRATORS).
             output, optional: Whether or not to output data to file (default False)."""
     
-    results = test_ivp.test_integrators(end_t, ivp, integrators=integrators, output=output) # Apply the methods to the IVP
-    find_integration_errors(results, ivp) # Find the errors for each method and plot them for each dimension of the IVP
+    results = test_ivp.test_integrators(end_t, ivp, integrators=integrators) # Apply the methods to the IVP
+    find_integration_errors(results, ivp, output=output) # Find the errors for each method and plot them for each dimension of the IVP
 
 if __name__ == "__main__":
     test_integrator_errors(100.0, stiff_functions.STIFF_IVP, output=True)
