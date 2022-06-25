@@ -16,11 +16,7 @@ def get_error_by_dimension(y_num, y_exact, ndim):
     """Takes a numerical solution, an analytical solution, and the number of dimensions of the Initial Value Problem, and returns the fractional error listed by dimension."""
     err = fractional_error(y_num, y_exact) # Calculate the fractional error
     
-    if ndim == 1: # If ivp is only 1D...
-        return [err] # Return a list that contains only err
-        
-    else: # If ivp has more than 1 dimension...
-        return [err[i] for i in range(0, ndim)] # Split err into individual dimensions
+    return [err[i] for i in range(0, ndim)] # Split err into individual dimensions
 
 def find_integration_errors(results, ivp):
     """Takes a dictionary that maps method names to results from scipy.integrate.solve_ivp and an Initial Value Problem, and plots the relative errors in that solution.
