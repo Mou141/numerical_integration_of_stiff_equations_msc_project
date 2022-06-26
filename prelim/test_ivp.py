@@ -7,7 +7,7 @@ import stiff_functions # See stiff_functions.py in same directory
 # List of SciPy integrators to check
 INTEGRATORS = ["Radau", "BDF", "LSODA"]
 
-def test_integrators(end_t, ivp, integrators=INTEGRATORS, dense_output=False):
+def test_integrators(end_t, ivp, integrators=INTEGRATORS, dense_output=False, atol=1.0e-06, rtol=1.0e-03):
     """For each of the specified stiff integrators available with SciPy, integrate the initial value problem specified from t0 to end_t.
     
     Arguments:
@@ -15,6 +15,8 @@ def test_integrators(end_t, ivp, integrators=INTEGRATORS, dense_output=False):
         ivp: A tuple specifying the initial value problem to integrate (must contain the same information in the same order as stiff_functions.IVPTuple, but need not be an instance of this class).
         integrators, optional: A list of methods with which to attempt to solve the initial value problem (defaults to the contents of the INTEGRATORS global variable).
         dense_output, optional: Whether to ask SciPy to compute a continuous solution (defaults to False).
+        atol, optional: Absolute error tolerance of method (see SciPy documentation). Defaults to 1.0e-06.
+        rtol, optional: Relative error tolerance of method (see SciPy documentation). Defaults to 1.0e-03.
         
     Returns:
         A dictionary of the integrators and the solution objects produced by scipy.integrate.solve_ivp"""
@@ -24,7 +26,7 @@ def test_integrators(end_t, ivp, integrators=INTEGRATORS, dense_output=False):
     out = {} # Empty dictionary to contain solutions
     
     for method in integrators: # For each method specified...
-        solution = scipy.integrate.solve_ivp(fun=ivp.ODEFunction, t_span=(ivp.t0, end_t), y0=ivp.y0, method=method, dense_output=dense_output) # Attempt to find a solution
+        solution = scipy.integrate.solve_ivp(fun=ivp.ODEFunction, t_span=(ivp.t0, end_t), y0=ivp.y0, method=method, dense_output=dense_output, rtol=rtol, atol=atol) # Attempt to find a solution
         out[method] = solution # Store that solution in the output dictionary
         
     return out

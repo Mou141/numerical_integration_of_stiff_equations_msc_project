@@ -74,17 +74,20 @@ def find_integration_errors(results, ivp, output=False):
     figure.legend(methods, loc="upper right") # Add the methods to the legend and place the legend in the upper right
     plt.show() # Display the graphs
 
-def test_integrator_errors(end_t, ivp, integrators=test_ivp.INTEGRATORS, output=False):
+def test_integrator_errors(end_t, ivp, integrators=test_ivp.INTEGRATORS, output=False, atol=1.0e-06, rtol=1.0e-03):
     """Applies a series of integration methods supported by scipy.integrate.solve_ivp to an initial value problem and plots the fractional errors of the results.
         
         Arguments:
             end_t: The end point of the integration.
             ivp: A tuple containing the same information as an IVPTuple instance, in the same order.
             integrators, optional: A list of the integration methods to use (defaults to the contents of test_ivp.INTEGRATORS).
-            output, optional: Whether or not to output data to file (default False)."""
+            output, optional: Whether or not to output data to file (default False).
+            atol, optional: The absolute error tolerance of the methods (see SciPy documentation). Defaults to 1.0e-06.
+            rtol, optional: The relative error tolerance of the methods (see SciPy documentation). Defaults to 1.0e-03."""
     
-    results = test_ivp.test_integrators(end_t, ivp, integrators=integrators) # Apply the methods to the IVP
+    results = test_ivp.test_integrators(end_t, ivp, integrators=integrators, atol=atol, rtol=rtol) # Apply the methods to the IVP
     find_integration_errors(results, ivp, output=output) # Find the errors for each method and plot them for each dimension of the IVP
 
 if __name__ == "__main__":
-    test_integrator_errors(100.0, stiff_functions.STIFF_IVP, output=True)
+    test_integrator_errors(100.0, stiff_functions.STIFF_IVP, output=True, atol=1.0e-10)
+    # Small value of atol is necessary because solution rapidly decays to very small values
