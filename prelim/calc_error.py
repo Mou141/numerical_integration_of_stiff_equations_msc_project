@@ -89,5 +89,5 @@ def test_integrator_errors(end_t, ivp, integrators=test_ivp.INTEGRATORS, output=
     find_integration_errors(results, ivp, output=output) # Find the errors for each method and plot them for each dimension of the IVP
 
 if __name__ == "__main__":
-    test_integrator_errors(100.0, stiff_functions.STIFF_IVP, output=True, atol=1.0e-10)
+    test_integrator_errors(100.0, stiff_functions.STIFF_IVP, output=True, atol=1.0e-20)
     # Small value of atol is necessary because solution rapidly decays to very small values
