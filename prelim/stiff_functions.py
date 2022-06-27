@@ -1,7 +1,6 @@
 # Contains stiff problems for testing purposes (currently for preliminary investigation, may be incorporated into final package)
-# Requires numpy
-import numpy as np # For np.exp function
-from collections import namedtuple
+import numpy as np # For array type and maths
+from collections import namedtuple # For creating IVPTuple class
 
 # Named tuple to contain IVP problem, solution, initial value and start position for integration (i.e. the value of t0 where y=y0)
 class IVPTuple(namedtuple("IVPTuple", ["ODEFunction", "SolutionFunction", "y0", "t0"])):
