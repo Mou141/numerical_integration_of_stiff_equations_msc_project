@@ -71,4 +71,4 @@ class IntegrationTests:
     @pytest.mark.parametrize("ivp,end_t", [(stiff_problems.STIFF_IVP, 1.0), (stiff_problems.STIFF_IVP2, 100.0)])
     def test_test_integrator_errors(self, ivp, end_t):
         """Call calc_error.test_integrator_errors with standard list of methods, given initial value problem, given final value of t, and with output set to False."""
-        calc_error.test_integrator_errors(end_t, ivp)
+        calc_error.test_integrator_errors(end_t=end_t, ivp=ivp)
