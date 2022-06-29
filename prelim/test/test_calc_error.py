@@ -13,7 +13,7 @@ import stiff_problems
 
 import numpy as np
 
-class ErrorTests:
+class TestErrors:
     """Tests for absolute and relative errror calculations."""
     
     @pytest.mark.parametrize("y_num,y_exact,a_err", [(1.0, 1.0, 0.0), (1.0, -1.0, 0.0), (np.array([1.0, 1.0, 0.5]), np.array([1.0, -1.0, 2.5]), np.array([0.0, 0.0, 2.0]))]) # Test values and outputs to use (test one value that would be the same with and without abs, one that needs abs, and one array to check it works properly with arrays)
@@ -26,7 +26,7 @@ class ErrorTests:
         """Tests calc_error.fractional_error by asserting that calc_error.fractional_error(a_err, y_num) == f_err."""
         assert calc_error.fractional_error(a_err, y_num) == pytest.approx(f_err, nan_ok=True) # pytest.approx copes with floating point arithmetic issues
 
-class FileTests:
+class TestFiles:
     """Performs tests on save_error function and resulting files.
     """
     
@@ -63,7 +63,7 @@ class FileTests:
         if self.delete_after: # If files should be deleted after completion of tests...
             self._cleanup(paths)
 
-class IntegrationTests:
+class TestIntegration:
     """Tests the main body of the program by integrating both the 1D and 2D stiff IVPs, calculating the errors, and plotting the fractional error on a graph.
     However, output to file is disabled."""
     
