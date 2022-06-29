@@ -3,11 +3,13 @@
 from pathlib import Path
 import sys # For sys.path
 sys.path.append(Path(__file__).resolve().parent.parent) # Add the parent directory of the directory that this file to the python path (since this contains calc_error.py)
+print(Path(__file__).resolve().parent.parent)
 
 import contextlib
 import os
 
 import pytest
+
 import calc_error
 import stiff_problems
 
