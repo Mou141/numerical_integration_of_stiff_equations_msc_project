@@ -12,18 +12,26 @@ def fractional_error(abs_err, y_num):
     """Calculates the fractional error in a numerical solution from the exact solution and its absolute error."""
     return abs_err/np.abs(y_num)
 
-def save_error(method, t, err, y):
-    """Saves three files, one for the t data (i.e. the independent variale), one for the error in the y-data, and another for the y-data.
+def save_error(method, t, abs_err, frac_err, y):
+    """Saves the t data, absolute error, fractional error, and y of the solution to separate files.
         
         Arguments:
-            method: The method used for integration (used to name the files).
-            t: The independent variable data."""
+            method: Name of the integration method used (used to name the files).
+            t: Array containing t data.
+            abs_err: Array containing absolute error data.
+            frac_err: Array containing fractional error data.
+            y: Array containing dependent variables of solution.
+            
+        Returns:
+            List of file names containing t, abs_err, frac_err, and y (in that order)."""
     
     # File paths for the t, error, and y files
-    paths = ["t_{0}.tsv".format(method), "err_{0}.tsv".format(method), "y_{0}.tsv".format(method)]
+    paths = ["t_{0}.tsv".format(method), "abs_err_{0}.tsv".format(method), "frac_err_{0}.tsv".format(method), "y_{0}.tsv".format(method)]
     
-    for data, path in zip([t, err.T, y.T], paths): # For each dataset and path (transposing err and y so that they are in column format)...
+    for data, path in zip([t, abs_err.T, frac_err.T, y.T], paths): # For each dataset and path (transposing errors and y so that they are in column format)...
         np.savetxt(path, data, delimiter="\t") # Save it to file
+    
+    return paths
 
 def find_integration_errors(results, ivp, output=False):
     """Takes a dictionary that maps method names to results from scipy.integrate.solve_ivp and an Initial Value Problem, and plots the relative errors in that solution.
