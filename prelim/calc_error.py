@@ -8,9 +8,9 @@ def absolute_error(y_num, y_exact):
     """Calculates the absolute error in a numerical solution by comparing with the exact solution."""
     return np.abs(y_num - y_exact)
     
-def fractional_error(y_num, y_exact):
-    """Calculates the fractional error in a numerical solution by comparing with the exact solution."""
-    return absolute_error(y_num, y_exact)/np.abs(y_num)
+def fractional_error(abs_err, y_num):
+    """Calculates the fractional error in a numerical solution from the exact solution and its absolute error."""
+    return abs_err/np.abs(y_num)
 
 def save_error(method, t, err, y):
     """Saves three files, one for the t data (i.e. the independent variale), one for the error in the y-data, and another for the y-data.
