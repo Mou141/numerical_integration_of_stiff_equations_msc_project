@@ -64,14 +64,15 @@ def find_integration_errors(results, ivp, output=False):
             print("Integration succeeded for method '{0}'.".format(method))
             
             y_exact = ivp.SolutionFunction(solution.t) # Calculate the analytical solution for the t values of the numerical solution
-            err = fractional_error(solution.y, y_exact) # Get the error in the numerical solution
+            abs_err = absolute_error(solution.y, y_exact) # Calculate the absolute error
+            frac_err = fractional_error(abs_err, solution.y) # Calculate the fractional error
             
             # If output is true, save the error data to file
             if output:
-                save_error(method, solution.t, err, solution.y)
+                save_error(method, solution.t, abs_err, frac_err, solution.y)
             
             for i in range(0, ivp.ndim): # For each dimension of the IVP...
-                ax[i].plot(solution.t, err[i]) # Plot the error in that dimension
+                ax[i].plot(solution.t, frac_err[i]) # Plot the error in that dimension
             
         else: # If integration failed...
             print("Integration failed for method '{0}'.".format(method))
