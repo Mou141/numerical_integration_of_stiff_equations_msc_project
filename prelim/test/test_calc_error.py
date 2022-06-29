@@ -1,7 +1,8 @@
 # Test suite for ../calc_error.py
 
+from pathlib import Path
 import sys # For sys.path
-sys.path.append("../") # Add the parent directory to the python path (since this contains calc_error.py)
+sys.path.append(Path(__file__).resolve().parent) # Add the parent directory of this file to the python path (since this contains calc_error.py)
 
 import pytest
 import calc_error
