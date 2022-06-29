@@ -9,6 +9,7 @@ import os
 
 import pytest
 import calc_error
+import stiff_problems
 
 import numpy as np
 
@@ -61,3 +62,13 @@ class FileTests:
         
         if self.delete_after: # If files should be deleted after completion of tests...
             self._cleanup(paths)
+
+class IntegrationTests:
+    """Tests the main body of the program by integrating both the 1D and 2D stiff IVPs, calculating the errors, and plotting the fractional error on a graph.
+    However, output to file is disabled."""
+    
+    # Integrate 1D IVP between 0.0 and 1.0 and the 2D IVP between 0.0 and 100.0 for each of the SciPy stiff methods
+    @pytest.mark.parametrize("ivp,end_t", [(stiff_problems.STIFF_IVP, 1.0), (stiff_problems.STIFF_IVP2, 100.0)])
+    def test_test_integrator_errors(self, ivp, end_t):
+        """Call calc_error.test_integrator_errors with standard list of methods, given initial value problem, given final value of t, and with output set to False."""
+        calc_error.test_integrator_errors(end_t, ivp)
