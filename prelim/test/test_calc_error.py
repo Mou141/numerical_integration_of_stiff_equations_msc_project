@@ -23,7 +23,7 @@ class ErrorTests:
     @pytest.mark.parametrize("y_num,a_err,f_err", [(5.0, 2.0, (2.0/5.0)), (-5.0, 2.0, (2.0/5.0)), (np.array([5.0, -5.0, 0.5]), np.array([2.0, 2.0, 0.1]), np.array([(2.0/5.0), (2.0/5.0)], (1.0/5.0)))])
     def test_fractional_error(self, y_num, a_err, f_err):
         """Tests calc_error.fractional_error by asserting that calc_error.fractional_error(a_err, y_num) == f_err."""
-        assert calc_error.fractional_error(a_err, y_num) == pytest.approx(f_err) # pytest.approx copes with floating point arithmetic issues
+        assert calc_error.fractional_error(a_err, y_num) == pytest.approx(f_err, nan_ok=True) # pytest.approx copes with floating point arithmetic issues
 
 class FileTests:
     """Performs tests on save_error function and resulting files.
@@ -57,7 +57,7 @@ class FileTests:
             saved_array = np.loadtxt(p) # Load the array from file
             assert len(saved_array) == len(arr) # Check that it has the same length as the original array
             assert np.shape(saved_array) == np.shape(arr) # Check that it has the same shape as the original array
-            assert saved_array == pytest.approx(arr) # Check arrays are equal to each other (use approx incase savetxt clips decimal places)
+            assert saved_array == pytest.approx(arr, nan_ok=True) # Check arrays are equal to each other (use approx incase savetxt clips decimal places)
         
         if self.delete_after: # If files should be deleted after completion of tests...
             self._cleanup(paths)
