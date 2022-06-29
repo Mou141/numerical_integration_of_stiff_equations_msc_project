@@ -29,7 +29,7 @@ class FileTests:
     """Performs tests on save_error function and resulting files.
     """
     
-    delete_after = True # True if files should be deleted after tests complete
+    delete_after = False # True if files should be deleted after tests complete. Else, False
     
     @staticmethod
     def _cleanup(paths):
@@ -38,7 +38,7 @@ class FileTests:
             with contextlib.suppress(FileNotFoundError, OSError):
                 os.remove(p) # Delete the file, ignoring errors if the file does not exist or an OSError occurs (but not if p is a directory)
     
-    @pytest.mark.parametrize("method,t,abs_err,frac_err,y", [("1DTest", np.array([]), np.array([]), np.array([]), np.array([])), ()])
+    @pytest.mark.parametrize("method,t,abs_err,frac_err,y", [("1DTest", np.array([1.0, 2.0, 3.0]), np.array([565.32, 13.622, 2322.2]), np.array([12313.22, 232.22, 12312.22]), np.array([645646.0, 3433.1, -45.2])), ("2DTest", np.array([12.1, -5.6, 6.7]), np.array([[56.75756767, -454.43434, -5.6], [7.853, 3535.42, -676.6]]), np.array([[56.7, 454.4, -5.6], [87877.853, -353589.42, 6769.6]]), np.array([[5697.07, 454.487, -5878.6], [-7887.853, 35676.42, 976.6]]))]) # Check save_error for 1D and 2D y
     def test_save_error(self, method, t, abs_err, frac_err, y):
         """Tests the calc_error.save_error function.
                
@@ -46,7 +46,8 @@ class FileTests:
                 - Files save without raising exception.
                 - Files exist afterwards.
                 - Files can be loaded back into program by numpy.
-                - Arrays from files have same length and shape as originals."""
+                - Arrays from files have same length and shape as originals.
+                - Arrays from files contain same values as originals."""
         
         paths = calc_error.save_error(method, t, abs_err, frac_err, y) # Save the arrays to file (test will fail if any exception thrown)
         
@@ -56,6 +57,7 @@ class FileTests:
             saved_array = np.loadtxt(p) # Load the array from file
             assert len(saved_array) == len(arr) # Check that it has the same length as the original array
             assert np.shape(saved_array) == np.shape(arr) # Check that it has the same shape as the original array
+            assert saved_array == pytest.approx(arr) # Check arrays are equal to each other (use approx incase savetxt clips decimal places)
         
         if self.delete_after: # If files should be deleted after completion of tests...
             self._cleanup(paths)
