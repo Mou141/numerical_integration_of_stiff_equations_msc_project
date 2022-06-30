@@ -72,10 +72,10 @@ class TestCmdArgs:
         assert analyse_error.parse_cmd_args(args) == out
     
     # Test arguments for test_fail_args
-    fail_args_1 = ([],) # Empty array should fail as the data file is required
-    fail_args_2 = (["test.tsv", "--graph-file", "test.png", "fgdgdg"],) # Array with 3 arguments should fail as this is too many
-    fail_args_3 = (["test.csv", "-dfgd", "dgdfg"],) # Incorrect switch 
-    fail_args_4 = (["test.csv", "--graph-file"],) # Switch given but no file specified
+    fail_args_1 = [] # Empty array should fail as the data file is required
+    fail_args_2 = ["test.tsv", "--graph-file", "test.png", "fgdgdg"] # Array with 3 arguments should fail as this is too many
+    fail_args_3 = ["test.csv", "-dfgd", "dgdfg"] # Incorrect switch 
+    fail_args_4 = ["test.csv", "--graph-file"] # Switch given but no file specified
 
     @pytest.mark.parametrize("args", [fail_args_1, fail_args_2, fail_args_3, fail_args_4])
     def test_fail_args(self, args):
