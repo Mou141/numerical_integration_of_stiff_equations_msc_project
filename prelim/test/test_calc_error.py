@@ -22,7 +22,7 @@ class TestErrors:
         """Tests calc_error.absolute_error by asserting that calc_error.absolute_error(y_num, y_exact) == a_err."""
         assert calc_error.absolute_error(y_num, y_exact) == pytest.approx(a_err) # pytest.approx copes with floating point arithmetic issues
     
-    @pytest.mark.parametrize("y_num,a_err,f_err", [(5.0, 2.0, (2.0/5.0)), (-5.0, 2.0, (2.0/5.0)), (np.array([5.0, -5.0, 0.5]), np.array([2.0, 2.0, 0.1]), np.array([(2.0/5.0), (2.0/5.0), (1.0/5.0)])])
+    @pytest.mark.parametrize("y_num,a_err,f_err", [(5.0, 2.0, (2.0/5.0)), (-5.0, 2.0, (2.0/5.0)), (np.array([5.0, -5.0, 0.5]), np.array([2.0, 2.0, 0.1]), np.array([(2.0/5.0), (2.0/5.0), (1.0/5.0)]))])
     def test_fractional_error(self, y_num, a_err, f_err):
         """Tests calc_error.fractional_error by asserting that calc_error.fractional_error(a_err, y_num) == f_err."""
         assert calc_error.fractional_error(a_err, y_num) == pytest.approx(f_err, nan_ok=True) # pytest.approx copes with floating point arithmetic issues
