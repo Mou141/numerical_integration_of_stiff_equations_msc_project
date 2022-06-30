@@ -41,13 +41,13 @@ class TestStatsFunctions:
             analyse_error.l_infinity_norm(np.array([]))
     
     # Test parameters for test_calc_err_stats
-    stats_1 = (np.array([2.0, -2.0]), (np.sqrt(8.0), 2.0, 2.0)) # l2 is sqrt(8), l_inf is 2, mean is 2
-    stats_2 = (np.array([3.5, 12.3, -33.4]), (np.sqrt(1279.1), 33.4, -5.6667))
+    stats_1 = (np.array([2.0, -2.0]), (np.sqrt(8.0), 2.0, 0.0)) # l2 is sqrt(8), l_inf is 2, mean is 0
+    stats_2 = (np.array([3.5, 12.3, -33.4]), (np.sqrt(1279.1), 33.4, -5.866666666666666))
 
     @pytest.mark.parametrize("arr,stats", [stats_1, stats_2])
     def test_calc_err_stats(self, arr, stats):
         """Tests that analyse_error.test_calc_err_stats matches the contents of "stats"."""
-        
+
         stats = analyse_error.ErrorStatsTuple._make(stats) # Convert stats to an ErrorStatsTuple
 
         calc_stats = analyse_error.calc_err_stats(arr) # Calculate the statistics on the array
