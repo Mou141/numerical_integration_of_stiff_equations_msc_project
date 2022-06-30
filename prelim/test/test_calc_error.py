@@ -51,6 +51,8 @@ class TestFiles:
                 - Arrays from files have same length and shape as originals.
                 - Arrays from files contain same values as originals."""
         
+        paths = [] # Set paths to an empty list so that cleanup code will not throw error if no files are generated
+        
         try:
             paths = calc_error.save_error(method, t, abs_err, frac_err, y) # Save the arrays to file (test will fail if any exception thrown)
 
