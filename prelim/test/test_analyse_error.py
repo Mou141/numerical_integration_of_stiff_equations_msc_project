@@ -10,19 +10,6 @@ import pytest # For testing functions
 import numpy as np # For maths and arrays
 
 import analyse_error # Module to test
-
-def containers_are_equal(i1, i2):
-    """Compares two containers with pytest.approx and returns True if every element in i1 matches its equivalent in i2."""
-
-    if len(i1) != len(i2): # If the two containers don't have the same length...
-        return False
-
-    for v1, v2 in zip(i1, i2): # Iterate over i1 and i2 in parallel...
-        if v1 != pytest.approx(v2): # If the values don't match...
-            return False
-    
-    # If all comparisons succeeded...
-    return True
     
 class TestStatsFunctions:
     """Tests the functions which calculate statistics (i.e. l^2 norm, l^infinity norm, and mean)."""
@@ -60,4 +47,12 @@ class TestStatsFunctions:
     @pytest.mark.parametrize("arr,stats", [stats_1, stats_2])
     def test_calc_err_stats(self, arr, stats):
         """Tests that analyse_error.test_calc_err_stats matches the contents of "stats"."""
-        assert containers_are_equal(analyse_error.calc_err_stats(arr), stats)
+        
+        stats = analyse_error.ErrorStatsTuple._make(stats) # Convert stats to an ErrorStatsTuple
+
+        calc_stats = analyse_error.calc_err_stats(arr) # Calculate the statistics on the array
+
+        # Compare each of the statistical measures in turn
+        assert calc_stats.l2 == pytest.approx(stats.l2)
+        assert calc_stats.l_inf == pytest.approx(stats.l_inf)
+        assert calc_stats.mean == pytest.approx(stats.mean)
