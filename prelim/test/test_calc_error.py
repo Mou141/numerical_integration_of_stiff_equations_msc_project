@@ -10,7 +10,7 @@ import os
 import pytest
 
 import calc_error
-import stiff_problems
+import stiff_functions
 
 import numpy as np
 
@@ -69,7 +69,7 @@ class TestIntegration:
     However, output to file is disabled."""
     
     # Integrate 1D IVP between 0.0 and 1.0 and the 2D IVP between 0.0 and 100.0 for each of the SciPy stiff methods
-    @pytest.mark.parametrize("ivp,end_t", [(stiff_problems.STIFF_IVP, 1.0), (stiff_problems.STIFF_IVP2, 100.0)])
+    @pytest.mark.parametrize("ivp,end_t", [(stiff_functions.STIFF_IVP, 1.0), (stiff_functions.STIFF_IVP2, 100.0)])
     def test_test_integrator_errors(self, ivp, end_t):
         """Call calc_error.test_integrator_errors with standard list of methods, given initial value problem, given final value of t, and with output set to False."""
         calc_error.test_integrator_errors(end_t=end_t, ivp=ivp)
