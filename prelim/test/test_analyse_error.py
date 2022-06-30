@@ -79,6 +79,6 @@ class TestCmdArgs:
 
     @pytest.mark.parametrize("args", [fail_args_1, fail_args_2, fail_args_3, fail_args_4])
     def test_fail_args(self, args):
-        """Checks that argparse attempts to exit program for incorrect arguments."""
-        with pytest.raises(SystemExit, argparse.ArgumentError):
+        """Checks that argparse fails for incorrect arguments."""
+        with pytest.raises(argparse.ArgumentError):
             analyse_error.parse_cmd_args(args)

@@ -34,8 +34,10 @@ def parse_cmd_args(args=None):
         Returns:
             data_file: Path to the file which contains the absolute error data.
             graph_file: Path to save the graph to, or None if no path was specified."""
+    
+    exit_on_error = args is None # If arguments not specified (i.e. if args == None, exit_on_error == True), then tell argparse to exit the program on error
 
-    parser = argparse.ArgumentParser(description="Performs statistical analysis on absolute error data.")
+    parser = argparse.ArgumentParser(description="Performs statistical analysis on absolute error data.", exit_on_error=exit_on_error)
 
     parser.add_argument("data_file", type=str, help="File to load absolute errors from.")
     parser.add_argument("--graph-file", dest="graph_file", type=str, help="File to write histogram to.", default=None, required=False)
