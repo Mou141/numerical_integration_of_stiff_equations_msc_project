@@ -21,7 +21,7 @@ class TestStatsFunctions:
     l2_4 = (np.array([-2.0, 2.0]), np.sqrt(8.0)) # 2^2 == 4, (-2)^2 == 4, sum is 8 (i.e. check that negative numbers are squared correctly)
 
     @pytest.mark.parametrize("arr,l2", [l2_1, l2_2, l2_3, l2_4])
-    def test_l_2_norm(arr, l2):
+    def test_l_2_norm(self, arr, l2):
         """Tests that the l_2 norm of arr matches l2."""
         assert analyse_error.l_2_norm(arr) == pytest.approx(l2)
     
@@ -30,11 +30,11 @@ class TestStatsFunctions:
     l_inf_2 = (np.array([-6.5, 4.3, -3.0, 2.22]), 6.5) # 4.3 is the largest value, but -6.5 has the largest magnitude, so 6.5 should be returned
 
     @pytest.mark.parametrize("arr,l_inf", [l_inf_1, l_inf_2])
-    def test_l_infinity_norm(arr, l_inf):
+    def test_l_infinity_norm(self, arr, l_inf):
         """Tests that the l^infinity norm of arr matches l_inf."""
         assert analyse_error.l_infinity_norm(arr) == pytest.approx(l_inf)
 
-    def test_l_infinity_norm_empty_array():
+    def test_l_infinity_norm_empty_array(self):
         """Tests that analyse_error.l_infinity_norm raises a ValueError when called with an empty array (np.max always raises a ValueError on an empty array)."""
 
         with pytest.raises(ValueError):
@@ -45,6 +45,6 @@ class TestStatsFunctions:
     stats_2 = (np.array([3.5, 12.3, -33.4]), (np.sqrt(1279.1), 33.4, -5.6667))
 
     @pytest.mark.parametrize("arr,stats", [stats_1, stats_2])
-    def test_calc_err_stats(arr, stats):
+    def test_calc_err_stats(self, arr, stats):
         """Tests that analyse_error.test_calc_err_stats matches the contents of "stats"."""
         assert analyse_error.calc_err_stats(arr) == pytest.approx(stats)
