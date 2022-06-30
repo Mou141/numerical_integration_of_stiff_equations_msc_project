@@ -62,7 +62,7 @@ class TestCmdArgs:
     
     # Test arguments for test_args
     args_1 = (["test.tsv"], ("test.tsv", None)) # The graph file should be None if no path is specified for it
-    args_2 = (["test.tsv", "test.png"], ("test.tsv", "test.png")) # Both data file and graph file path should be returned as input
+    args_2 = (["test.tsv", "--graph-file", "test.png"], ("test.tsv", "test.png")) # Both data file and graph file path should be returned as input
 
     @pytest.mark.parametrize("args,out", [args_1, args_2])
     def test_args(self, args, out):
@@ -71,9 +71,11 @@ class TestCmdArgs:
     
     # Test arguments for test_fail_args
     fail_args_1 = ([],) # Empty array should fail as the data file is required
-    fail_args_2 = (["test.tsv", "test.png", "fgdgdg"],) # Array with 3 arguments should fail as this is too many
+    fail_args_2 = (["test.tsv", "--graph-file", "test.png", "fgdgdg"],) # Array with 3 arguments should fail as this is too many
+    fail_args_3 = (["test.csv", "-dfgd", "dgdfg"],) # Incorrect switch 
+    fail_args_4 = (["test.csv", "--graph-file"],) # Switch given but no file specified
 
-    @pytest.mark.parametrize("args", [fail_args_1, fail_args_2])
+    @pytest.mark.parametrize("args", [fail_args_1, fail_args_2, fail_args_3, fail_args_4])
     def test_fail_args(self, args):
         """Checks that argparse attempts to exit program for incorrect arguments."""
         with pytest.raises(SystemExit):
