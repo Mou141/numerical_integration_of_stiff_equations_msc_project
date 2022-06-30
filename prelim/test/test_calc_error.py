@@ -51,18 +51,19 @@ class TestFiles:
                 - Arrays from files have same length and shape as originals.
                 - Arrays from files contain same values as originals."""
         
-        paths = calc_error.save_error(method, t, abs_err, frac_err, y) # Save the arrays to file (test will fail if any exception thrown)
-        
-        for p, arr in zip(paths, [t, abs_err.T, frac_err.T, y.T]): # For each path, get the path and the associated array (transposing the errors and y so they match the file contents)...
-            assert Path(p).is_file() # Make sure that the path points to a file that exists
-            
-            saved_array = np.loadtxt(p) # Load the array from file
-            assert len(saved_array) == len(arr) # Check that it has the same length as the original array
-            assert np.shape(saved_array) == np.shape(arr) # Check that it has the same shape as the original array
-            assert saved_array == pytest.approx(arr, nan_ok=True) # Check arrays are equal to each other (use approx incase savetxt clips decimal places)
-        
-        if self.delete_after: # If files should be deleted after completion of tests...
-            self._cleanup(paths)
+        try:
+            paths = calc_error.save_error(method, t, abs_err, frac_err, y) # Save the arrays to file (test will fail if any exception thrown)
+
+            for p, arr in zip(paths, [t, abs_err.T, frac_err.T, y.T]): # For each path, get the path and the associated array (transposing the errors and y so they match the file contents)...
+                assert Path(p).is_file() # Make sure that the path points to a file that exists
+
+                saved_array = np.loadtxt(p) # Load the array from file
+                assert len(saved_array) == len(arr) # Check that it has the same length as the original array
+                assert np.shape(saved_array) == np.shape(arr) # Check that it has the same shape as the original array
+                assert saved_array == pytest.approx(arr, nan_ok=True) # Check arrays are equal to each other (use approx incase savetxt clips decimal places)
+        finally:
+            if self.delete_after: # If files should be deleted after completion of tests...
+                self._cleanup(paths)
 
 class TestIntegration:
     """Tests the main body of the program by integrating both the 1D and 2D stiff IVPs, calculating the errors, and plotting the fractional error on a graph.
