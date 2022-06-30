@@ -10,7 +10,9 @@ import pytest # For testing functions
 import numpy as np # For maths and arrays
 
 import analyse_error # Module to test
-    
+
+import argparse # For ArgumentError
+
 class TestStatsFunctions:
     """Tests the functions which calculate statistics (i.e. l^2 norm, l^infinity norm, and mean)."""
     
@@ -78,5 +80,5 @@ class TestCmdArgs:
     @pytest.mark.parametrize("args", [fail_args_1, fail_args_2, fail_args_3, fail_args_4])
     def test_fail_args(self, args):
         """Checks that argparse attempts to exit program for incorrect arguments."""
-        with pytest.raises(SystemExit):
+        with pytest.raises(SystemExit, argparse.ArgumentError):
             analyse_error.parse_cmd_args(args)
