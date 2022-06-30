@@ -38,7 +38,7 @@ def parse_cmd_args(args=None):
     parser = argparse.ArgumentParser(description="Performs statistical analysis on absolute error data.")
 
     parser.add_argument("data_file", type=str, help="File to load absolute errors from.")
-    parser.add_argument("graph_file", type=str, help="File to write histogram to.", default=None, required=False)
+    parser.add_argument("--graph-file", dest="graph_file", type=str, help="File to write histogram to.", default=None, required=False)
 
     if args is None: # If command line arguments should be used...
         parsed = parser.parse_args()
