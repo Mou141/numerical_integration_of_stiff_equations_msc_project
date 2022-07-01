@@ -104,14 +104,15 @@ class TestDataFileRead:
     # Test data for test_read_data_file
     arr_1 = np.array([np.array([3.3, 545.43, 6766.76, 8.887])]) # Test error data for 1D problem
     arr_2 = np.array([[5.654, 56767.65, 8787.6, 64.23], [76.66666, 232.232, 1232.32, 8757566.00]]) # Test error data for 1D problem
+    arr_3 = np.array([np.array([np.nan, 6.5454, 2323.2])]) # Test that program processes NaN correctly
 
-    @pytest.mark.parametrize("arr", [arr_1, arr_2])
+    @pytest.mark.parametrize("arr", [arr_1, arr_2, arr_3])
     def test_read_data_file(self, arr, data_file):
         """Creates a temporary data file, stores 'arr' in it, and then uses analyse_error.read_data_file to read it."""
         np.savetxt(data_file, arr.T, delimiter="\t") # Write the array to file, transposing it
 
         data = analyse_error.read_data_file(data_file) # Read the data back
 
-        assert data == pytest.approx(arr) # Check that the data is the same after reading
+        assert data == pytest.approx(arr, nan_ok=True) # Check that the data is the same after reading
         assert len(data.shape) == 2 # Check that the array is 2D
         assert data.shape == arr.shape # Check that the data and the original array are the same shape
