@@ -116,3 +116,37 @@ class TestDataFileRead:
         assert data == pytest.approx(arr, nan_ok=True) # Check that the data is the same after reading
         assert len(data.shape) == 2 # Check that the array is 2D
         assert data.shape == arr.shape # Check that the data and the original array are the same shape
+
+class TestHistogram:
+    """Tests the code which generates histograms from error data."""
+
+    @pytest.fixture(scope="function")
+    def data_file(self, tmp_path):
+        """Returns a temporary file name with the extension .png, an then attempts to delete it after the test is complete."""
+        basename = "tmp_{0}.png".format(random.randint(0, 1000000)) # Generate a base filename of the formar tmp_N.png, where N is a random integer between 0 and 1000000
+
+        full_path = tmp_path / basename # Create a full file path from the path of the temporary directory and the basename
+
+        yield full_path # Return it
+
+        # After test function is complete, attempt to delete file, ignoring missing file or IO problem
+        with contextlib.suppress(FileNotFoundError, OSError):
+            os.remove(full_path)
+    
+    # Test data for test_histogram_file and test_histogram_display (random data with a standard distribution)
+    data_1 = np.array([np.random.standard_normal(1000)]) # 1D data
+    data_2 = np.array([np.random.standard_normal(1000), np.random.standard_normal(1000)]) # 2D data
+
+    @pytest.mark.parametrize("data", [data_1, data_2])
+    def test_histogram_file(self, data, data_file):
+        """Creates a histogram from the specified data, writes it to file, and then checks that the file was written."""
+
+        analyse_error.make_histogram(data, file_path=str(data_file))
+        
+        assert data_file.is_file() # Check that the file exists
+    
+    @pytest.mark.parametrize("data", [data_1, data_2])
+    def test_histogram_display(self, data):
+        """Creates a histogram from the specified data and displays it visually."""
+        analyse_error.make_histogram(data)
+        
