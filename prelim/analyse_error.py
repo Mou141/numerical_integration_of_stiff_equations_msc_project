@@ -46,3 +46,14 @@ def parse_cmd_args(args=None):
         parsed = parser.parse_args(args)
     
     return parsed.data_file, parsed.graph_file
+
+def read_data_file(file_path):
+    """Reads absolute error data from the specified file and returns a 2D array organised by dimension."""
+    
+    data = np.loadtxt(file_path) # Read the data from file
+    
+    if len(data.shape) == 1: # If the data contains only one dimension, then data is from a 1D IVP...
+        return np.array([data]) # Wrap it in another array so that it is a 2D array
+
+    else: # If data is 2D...
+        return data.T # Transpose it so that columns and rows are switched (i.e. data[0] will return the errors in y1, data[1] the errors in y[2] etc.)
