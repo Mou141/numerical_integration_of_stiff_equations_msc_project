@@ -1,6 +1,7 @@
 """pytest tests for ../analyse_error.py."""
 
 # Add the parent directory of this file's directory to the python path (because analyse_error.py is in that directory)
+import contextlib
 from pathlib import Path # For file path manipulations
 import sys # For sys.path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
@@ -8,6 +9,9 @@ sys.path.append(str(Path(__file__).resolve().parent.parent))
 import pytest # For testing functions
 
 import numpy as np # For maths and arrays
+
+import os # For os.remove, to delete files
+import random # To generate a random integer
 
 import analyse_error # Module to test
 
@@ -80,3 +84,34 @@ class TestCmdArgs:
         """Checks that argparse fails for incorrect arguments."""
         with pytest.raises(SystemExit):
             analyse_error.parse_cmd_args(args)
+
+class TestDataFileRead:
+    """Tests the code which reads absolute error data from a file."""
+
+    @pytest.fixture(scope="function")
+    def data_file(self, temp_path):
+        """Returns a temporary file name with the extension .tsv, and then attempts to delete it after the test is complete."""
+        basename = "tmp_{0}.tsv".format(random.randint(0, 1000000)) # Generate a base filename of the format tmp_N.tsv, where N is a random integer between 0 and 100000
+
+        full_path = temp_path / basename # Create a full file path from the path of the temporary directory and the basename
+
+        yield full_path # Return it
+
+        # After test function is complete, attempt to delete file, ignoring missing file or IO problem
+        with contextlib.suppress(FileNotFoundError, OSError):
+            os.remove(full_path)
+    
+    # Test data for test_read_data_file
+    arr_1 = np.array([np.array([3.3, 545.43, 6766.76, 8.887])]) # Test error data for 1D problem
+    arr_2 = np.array([[5.654, 56767.65, 8787.6, 64.23], [76.66666, 232.232, 1232.32, 8757566.00]]) # Test error data for 1D problem
+
+    @pytest.mark.parametrize("arr", [arr_1, arr_2])
+    def test_read_data_file(self, arr, data_file):
+        """Creates a temporary data file, stores 'arr' in it, and then uses analyse_error.read_data_file to read it."""
+        np.savetxt(data_file, arr.T, delimiter="\t") # Write the array to file, transposing it
+
+        data = analyse_error.read_data_file(data_file) # Read the data back
+
+        assert data == pytest.approx(arr) # Check that the data is the same after reading
+        assert len(data.shape) == 2 # Check that the array is 2D
+        assert data.shape == arr.shape # Check that the data and the original array are the same shape
