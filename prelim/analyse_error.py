@@ -69,7 +69,7 @@ def make_histogram(data, file_path=None, bins=10):
 
     ndim = len(data[:]) # Get the number of dimensions in the error data
 
-    figure, ax = plt.subplots(0, ndim, sharey=True) # Create a list of subplots, one for each dimension of the error data. All the subplots are on the same row and share a y-axis
+    figure, ax = plt.subplots(1, ndim, sharey=True) # Create a list of subplots, one for each dimension of the error data. All the subplots are on the same row and share a y-axis
 
     if ndim == 1: # If there is only one dimension...
         ax.set_xlabel("err(y)") # Set the label for the x-axis
