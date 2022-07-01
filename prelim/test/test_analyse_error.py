@@ -89,11 +89,11 @@ class TestDataFileRead:
     """Tests the code which reads absolute error data from a file."""
 
     @pytest.fixture(scope="function")
-    def data_file(self, temp_path):
+    def data_file(self, tmp_path):
         """Returns a temporary file name with the extension .tsv, and then attempts to delete it after the test is complete."""
         basename = "tmp_{0}.tsv".format(random.randint(0, 1000000)) # Generate a base filename of the format tmp_N.tsv, where N is a random integer between 0 and 100000
 
-        full_path = temp_path / basename # Create a full file path from the path of the temporary directory and the basename
+        full_path = tmp_path / basename # Create a full file path from the path of the temporary directory and the basename
 
         yield full_path # Return it
 
