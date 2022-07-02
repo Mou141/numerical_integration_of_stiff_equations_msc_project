@@ -90,3 +90,41 @@ def make_histogram(data, file_path=None, bins=10):
 
     else: # If a file is specified...
         plt.savefig(file_path)
+
+def print_stats(data):
+    """Calculates statistics for the given dataset and then displays them."""
+    ndim = len(data[:]) # Get the number of dimensions of the solution
+
+    if ndim == 1: # If only one dimension...
+        l2, l_inf, mean = calc_err_stats(data[0]) # Get the statistics of that dimension
+
+        # Print the statistics
+        print("l2: {0}".format(l2))
+        print("l_inf: {0}".format(l_inf))
+        print("mean: {0}".format(mean))
+
+    else: # If there's more than one dimension...
+        for i in range(0, ndim): # Iterate over each dimension...
+            l2, l_inf, mean = calc_err_stats(data[i]) # Get the statistics of that dimension
+
+            # Print the statistics
+            print("y{0}:".format(i+1))
+            print("\tl2: {0}".format(l2))
+            print("\tl_inf: {0}".format(l_inf))
+            print("\tmean: {0}".format(mean))
+
+def main(data_file_path, graph_file_path=None):
+    """Reads the specified data file, performs statistics on the data, and plots histogram(s) of it.
+        
+        Arguments:
+            data_file_path: Path of data file to read.
+            graph_file_path, optional: Path to save graph to or None to display it instead (default None)."""
+    
+    data = read_data_file(data_file_path) # Read the data from file
+
+    print_stats(data) # Print statistics on the data
+    make_histogram(data, graph_file_path) # Make a histogram of the data
+
+if __name__ == "__main__":
+    data_path, graph_path = parse_cmd_args()
+    main(data_path, graph_path)
