@@ -98,4 +98,4 @@ def test_integrator_errors(end_t, ivp, integrators=test_ivp.INTEGRATORS, output=
     find_integration_errors(results, ivp, output=output) # Find the errors for each method and plot them for each dimension of the IVP
 
 if __name__ == "__main__":
-    test_integrator_errors(100.0, stiff_functions.STIFF_IVP2, output=True)
+    test_integrator_errors(1.0, stiff_functions.STIFF_IVP, output=True)
