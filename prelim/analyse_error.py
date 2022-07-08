@@ -7,8 +7,8 @@ import argparse # For parsing sys.argv
 import matplotlib.pyplot as plt # For plotting histograms
 
 def l_2_norm(x):
-    """Calculates the l^2 norm of the given array (i.e. sqrt(sum(x^2))."""
-    return np.sqrt(np.sum(x ** 2))
+    """Calculates the l^2 error of the given array (i.e. sqrt(mean(x^2))."""
+    return np.sqrt(np.mean(x ** 2))
 
 def l_infinity_norm(x):
     """Calculates the l^infinity norm of the given array (i.e. the maximum absolute value)."""
