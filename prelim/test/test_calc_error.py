@@ -17,15 +17,30 @@ import numpy as np
 class TestErrors:
     """Tests for absolute and relative errror calculations."""
     
-    @pytest.mark.parametrize("y_num,y_exact,a_err", [(1.0, 1.0, 0.0), (1.0, -1.0, 2.0), (np.array([1.0, 1.0, 0.5]), np.array([1.0, -1.0, 2.5]), np.array([0.0, 2.0, 2.0]))]) # Test values and outputs to use (test one value that would be the same with and without abs, one that needs abs, and one array to check it works properly with arrays)
-    def test_absolute_error(self, y_num, y_exact, a_err):
-        """Tests calc_error.absolute_error by asserting that calc_error.absolute_error(y_num, y_exact) == a_err."""
-        assert calc_error.absolute_error(y_num, y_exact) == pytest.approx(a_err) # pytest.approx copes with floating point arithmetic issues
+    # Test values for test_linear_error
+    lin_test_1 = [1.0, 0.5, 0.5] # Scalar test with positive answer
+    lin_test_2 = [1.0, 1.5, -0.5] # Scalar test with negative answer
+    lin_test_3 = [-1.0, -0.5, -0.5] # Scalar test with negative arguments
+    lin_test_4 = [np.array([1.0, 1.0, -1.0]), np.array([0.5, 1.5, -0.5]), np.array([0.5, -0.5, -0.5])] # 1D array test combining above
+    lin_test_5 = [np.array([[1.0, 1.0, -1.0], [2.4, 5.6, -7.6]]), np.array([[0.5, 1.5, -0.5], [4.5, -7.6, -54.5]]), np.array([[0.5, -0.5, -0.5], [-2.1, 13.2, 46.9]])] # 2D array test
+
+    @pytest.mark.parametrize("y_num,y_exact,lin_err", [lin_test_1, lin_test_2, lin_test_3, lin_test_4, lin_test_5])
+    def test_linear_error(self, y_num, y_exact, lin_err):
+        """Tests calc_error.linear_error by calculating linear errors and comparing to precalculated values."""
+        assert calc_error.linear_error(y_num, y_exact) == pytest.approx(lin_err)
     
-    @pytest.mark.parametrize("y_num,a_err,f_err", [(5.0, 2.0, (2.0/5.0)), (-5.0, 2.0, (2.0/5.0)), (np.array([5.0, -5.0, 0.5]), np.array([2.0, 2.0, 0.1]), np.array([(2.0/5.0), (2.0/5.0), (1.0/5.0)]))])
-    def test_fractional_error(self, y_num, a_err, f_err):
-        """Tests calc_error.fractional_error by asserting that calc_error.fractional_error(a_err, y_num) == f_err."""
-        assert calc_error.fractional_error(a_err, y_num) == pytest.approx(f_err, nan_ok=True) # pytest.approx copes with floating point arithmetic issues
+    # Test values for test_fractional_error
+    frac_test_1 = [3.0, 1.0, (1.0/3.0)] # Scalar test with positive arguments
+    frac_test_2 = [-3.0, 1.0, (1.0/3.0)] # Scalar test with negative y_num
+    frac_test_3 = [3.0, -1.0, (1.0/3.0)] # Scalar test with negative lin_err
+    frac_test_4 = [3.0, np.nan, np.nan] # Scalar test with NaN
+    frac_test_5 = [np.array([3.0, -3.0]), np.array([1.0, 1.0]), np.array([(1.0/3.0), (1.0/3.0)])] # 1D array test
+    frac_test_6 = [np.array([[3.0, -3.0], [6.7, -8.4]]), np.array([[1.0, 1.0], [5.6, 6.6]]), np.array([[(1.0/3.0), (1.0/3.0)], [(5.6/6.7), (6.6/8.4)]])] # 2D array test
+
+    @pytest.mark("y_num,lin_err,f_err", [frac_test_1, frac_test_2, frac_test_3, frac_test_4, frac_test_5, frac_test_6])
+    def test_fractional_error(self, y_num, lin_err, f_err):
+        """Tests calc_error.fractional_error by asserting that calc_error.fractional_error(lin_err, y_num) == f_err."""
+        assert calc_error.fractional_error(lin_err, y_num) == pytest.approx(f_err, nan_ok=True) # pytest.approx copes with floating point arithmetic issues
 
 class TestFiles:
     """Performs tests on save_error function and resulting files.
@@ -40,8 +55,8 @@ class TestFiles:
             with contextlib.suppress(FileNotFoundError, OSError):
                 os.remove(p) # Delete the file, ignoring errors if the file does not exist or an OSError occurs (but not if p is a directory)
     
-    @pytest.mark.parametrize("method,t,abs_err,frac_err,y", [("1DTest", np.array([1.0, 2.0, 3.0]), np.array([565.32, 13.622, 2322.2]), np.array([12313.22, 232.22, 12312.22]), np.array([645646.0, 3433.1, -45.2])), ("2DTest", np.array([12.1, -5.6, 6.7]), np.array([[56.75756767, -454.43434, -5.6], [7.853, 3535.42, -676.6]]), np.array([[56.7, 454.4, -5.6], [87877.853, -353589.42, 6769.6]]), np.array([[5697.07, 454.487, -5878.6], [-7887.853, 35676.42, 976.6]]))]) # Check save_error for 1D and 2D y
-    def test_save_error(self, method, t, abs_err, frac_err, y):
+    @pytest.mark.parametrize("method,t,lin_err,frac_err,y", [("1DTest", np.array([1.0, 2.0, 3.0]), np.array([565.32, 13.622, 2322.2]), np.array([12313.22, 232.22, 12312.22]), np.array([645646.0, 3433.1, -45.2])), ("2DTest", np.array([12.1, -5.6, 6.7]), np.array([[56.75756767, -454.43434, -5.6], [7.853, 3535.42, -676.6]]), np.array([[56.7, 454.4, -5.6], [87877.853, -353589.42, 6769.6]]), np.array([[5697.07, 454.487, -5878.6], [-7887.853, 35676.42, 976.6]]))]) # Check save_error for 1D and 2D y
+    def test_save_error(self, method, t, lin_err, frac_err, y):
         """Tests the calc_error.save_error function.
                
             Tests:
@@ -54,9 +69,9 @@ class TestFiles:
         paths = [] # Set paths to an empty list so that cleanup code will not throw error if no files are generated
         
         try:
-            paths = calc_error.save_error(method, t, abs_err, frac_err, y) # Save the arrays to file (test will fail if any exception thrown)
+            paths = calc_error.save_error(method, t, lin_err, frac_err, y) # Save the arrays to file (test will fail if any exception thrown)
 
-            for p, arr in zip(paths, [t, abs_err.T, frac_err.T, y.T]): # For each path, get the path and the associated array (transposing the errors and y so they match the file contents)...
+            for p, arr in zip(paths, [t, lin_err.T, frac_err.T, y.T]): # For each path, get the path and the associated array (transposing the errors and y so they match the file contents)...
                 assert Path(p).is_file() # Make sure that the path points to a file that exists
 
                 saved_array = np.loadtxt(p) # Load the array from file
