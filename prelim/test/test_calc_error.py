@@ -37,7 +37,7 @@ class TestErrors:
     frac_test_5 = [np.array([3.0, -3.0]), np.array([1.0, 1.0]), np.array([(1.0/3.0), (1.0/3.0)])] # 1D array test
     frac_test_6 = [np.array([[3.0, -3.0], [6.7, -8.4]]), np.array([[1.0, 1.0], [5.6, 6.6]]), np.array([[(1.0/3.0), (1.0/3.0)], [(5.6/6.7), (6.6/8.4)]])] # 2D array test
 
-    @pytest.mark("y_num,lin_err,f_err", [frac_test_1, frac_test_2, frac_test_3, frac_test_4, frac_test_5, frac_test_6])
+    @pytest.mark.parametrize("y_num,lin_err,f_err", [frac_test_1, frac_test_2, frac_test_3, frac_test_4, frac_test_5, frac_test_6])
     def test_fractional_error(self, y_num, lin_err, f_err):
         """Tests calc_error.fractional_error by asserting that calc_error.fractional_error(lin_err, y_num) == f_err."""
         assert calc_error.fractional_error(lin_err, y_num) == pytest.approx(f_err, nan_ok=True) # pytest.approx copes with floating point arithmetic issues
