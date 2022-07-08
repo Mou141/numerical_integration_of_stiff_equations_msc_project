@@ -4,21 +4,21 @@ import numpy as np # For maths functions and arrays
 import test_ivp # For test_integrators function and INTEGRATORS global variable
 import stiff_functions # For STIFF_IVP and STIFF_IVP2
 
-def absolute_error(y_num, y_exact):
-    """Calculates the absolute error in a numerical solution by comparing with the exact solution."""
-    return np.abs(y_num - y_exact)
+def linear_error(y_num, y_exact):
+    """Calculates the linear error in a numerical solution by comparing with the exact solution (i.e. y_num - y_exact)."""
+    return y_num - y_exact
     
-def fractional_error(abs_err, y_num):
-    """Calculates the fractional error in a numerical solution from the exact solution and its absolute error."""
-    return abs_err/np.abs(y_num)
+def fractional_error(lin_err, y_num):
+    """Calculates the fractional error in a numerical solution from the exact solution and the absolute value of the linear error."""
+    return np.abs(lin_err)/np.abs(y_num)
 
-def save_error(method, t, abs_err, frac_err, y):
-    """Saves the t data, absolute error, fractional error, and y of the solution to separate files.
+def save_error(method, t, lin_err, frac_err, y):
+    """Saves the t data, linear error, fractional error, and y of the solution to separate files.
         
         Arguments:
             method: Name of the integration method used (used to name the files).
             t: Array containing t data.
-            abs_err: Array containing absolute error data.
+            lin_err: Array containing linear error data.
             frac_err: Array containing fractional error data.
             y: Array containing dependent variables of solution.
             
@@ -26,9 +26,9 @@ def save_error(method, t, abs_err, frac_err, y):
             List of file names containing t, abs_err, frac_err, and y (in that order)."""
     
     # File paths for the t, error, and y files
-    paths = ["t_{0}.tsv".format(method), "abs_err_{0}.tsv".format(method), "frac_err_{0}.tsv".format(method), "y_{0}.tsv".format(method)]
+    paths = ["t_{0}.tsv".format(method), "lin_err_{0}.tsv".format(method), "frac_err_{0}.tsv".format(method), "y_{0}.tsv".format(method)]
     
-    for data, path in zip([t, abs_err.T, frac_err.T, y.T], paths): # For each dataset and path (transposing errors and y so that they are in column format)...
+    for data, path in zip([t, lin_err.T, frac_err.T, y.T], paths): # For each dataset and path (transposing errors and y so that they are in column format)...
         np.savetxt(path, data, delimiter="\t") # Save it to file
     
     return paths
@@ -64,12 +64,12 @@ def find_integration_errors(results, ivp, output=False):
             print("Integration succeeded for method '{0}'.".format(method))
             
             y_exact = ivp.SolutionFunction(solution.t) # Calculate the analytical solution for the t values of the numerical solution
-            abs_err = absolute_error(solution.y, y_exact) # Calculate the absolute error
-            frac_err = fractional_error(abs_err, solution.y) # Calculate the fractional error
+            lin_err = linear_error(solution.y, y_exact) # Calculate the linear error
+            frac_err = fractional_error(lin_err, solution.y) # Calculate the fractional error
             
             # If output is true, save the error data to file
             if output:
-                save_error(method, solution.t, abs_err, frac_err, solution.y)
+                save_error(method, solution.t, lin_err, frac_err, solution.y)
             
             for i in range(0, ivp.ndim): # For each dimension of the IVP...
                 ax[i].plot(solution.t, frac_err[i]) # Plot the error in that dimension
