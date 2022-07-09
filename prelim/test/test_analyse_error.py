@@ -19,7 +19,7 @@ class TestStatsFunctions:
     """Tests the functions which calculate statistics (i.e. l^2 norm, l^infinity norm, and mean)."""
     
     # Test parameters for test_2_norm
-    l2_1 = (np.array([1.0, 1.0, 1.0, 1.0]), 2.0)
+    l2_1 = (np.array([1.0, 1.0, 1.0, 1.0]), 1.0)
     l2_2 = (np.array([2.0, 2.0]), 2.0) # 2^2 = 4, sum is 8, mean is 4, sqrt(4) is 2
     l2_3 = (np.array([5.0, 1.5, 3.22, 5.6]), np.sqrt(np.mean(np.array([5.0, 1.5, 3.22, 5.6]) ** 2)))
     l2_4 = (np.array([-2.0, 2.0]), 2.0) # 2^2 = 4, (-2)^2 = 4, sum = 8, mean = 4.0, sqrt(4) = 2
@@ -142,17 +142,15 @@ class TestHistogram:
     # Test data for test_histogram_file and test_histogram_display (random data with a standard distribution)
     data_1 = np.array([np.random.standard_normal(1000)]) # 1D data
     data_2 = np.array([np.random.standard_normal(1000), np.random.standard_normal(1000)]) # 2D data
-
-    @pytest.mark.parametrize("data", [data_1, data_2])
-    def test_histogram_file(self, data, data_file):
-        """Creates a histogram from the specified data, writes it to file, and then checks that the file was written."""
-
-        analyse_error.make_histogram(data, file_path=str(data_file))
-        
-        assert data_file.is_file() # Check that the file exists
     
     @pytest.mark.parametrize("data", [data_1, data_2])
     def test_histogram_display(self, data):
         """Creates a histogram from the specified data and displays it visually."""
         analyse_error.make_histogram(data)
-        
+    
+    @pytest.mark.parametrize("data", [data_1, data_2])
+    def test_histogram_file(self, data, data_file):
+        """Creates a histogram from the specified data, writes it to file, and then checks that the file was written."""
+        analyse_error.make_histogram(data, file_path=str(data_file))
+
+        assert data_file.is_file() # Check that the file exists
