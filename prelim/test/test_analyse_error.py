@@ -45,8 +45,8 @@ class TestStatsFunctions:
             analyse_error.l_infinity_norm(np.array([]))
     
     # Test parameters for test_calc_err_stats
-    stats_1 = (np.array([2.0, -2.0]), (np.sqrt(8.0), 2.0, 0.0)) # l2 is sqrt(8), l_inf is 2, mean is 0
-    stats_2 = (np.array([3.5, 12.3, -33.4]), (np.sqrt(1279.1), 33.4, -5.866666666666666))
+    stats_1 = (np.array([2.0, -2.0]), (2.0, 2.0, 0.0)) # l2 is 2.0, l_inf is 2, mean is 0
+    stats_2 = (np.array([3.5, 12.3, -33.4]), (np.sqrt(np.mean(np.array([3.5, 12.3, -33.4]) ** 2)), 33.4, -5.866666666666666))
 
     @pytest.mark.parametrize("arr,stats", [stats_1, stats_2])
     def test_calc_err_stats(self, arr, stats):
@@ -65,10 +65,13 @@ class TestCmdArgs:
     """Tests the code which parses the command line arguments."""
     
     # Test arguments for test_args
-    args_1 = (["test.tsv"], ("test.tsv", None)) # The graph file should be None if no path is specified for it
-    args_2 = (["test.tsv", "--graph-file", "test.png"], ("test.tsv", "test.png")) # Both data file and graph file path should be returned as input
+    args_1 = (["test.tsv"], ("test.tsv", None, "sqrt")) # The graph file should be None if no path is specified for it
+    args_2 = (["test.tsv", "--graph-file", "test.png"], ("test.tsv", "test.png", "sqrt")) # Both data file and graph file path should be returned as input
+    args_3 = (["test.tsv", "--histogram-method", "fd"], ("test.tsv", None, "fd")) # Histogram method specified
+    args_4 = (["test.tsv", "-gf", "test.png"], ("test.tsv", "test.png", "sqrt")) # Both data file and graph file path should be returned as input
+    args_5 = (["test.tsv", "-hm", "fd"], ("test.tsv", None, "fd")) # Histogram method specified
 
-    @pytest.mark.parametrize("args,out", [args_1, args_2])
+    @pytest.mark.parametrize("args,out", [args_1, args_2, args_3, args_4, args_5])
     def test_args(self, args, out):
         """Asserts that the result of parsing 'args' with analyse_error.parse_cmd_args is equal to out."""
         assert analyse_error.parse_cmd_args(args) == out
@@ -78,8 +81,11 @@ class TestCmdArgs:
     fail_args_2 = ["test.tsv", "--graph-file", "test.png", "fgdgdg"] # Array with 3 arguments should fail as this is too many
     fail_args_3 = ["test.csv", "-dfgd", "dgdfg"] # Incorrect switch 
     fail_args_4 = ["test.csv", "--graph-file"] # Switch given but no file specified
+    fail_args_5 = ["test.csv", "-gf"] # Switch given but no file specified
+    fail_args_6 = ["test.tsv", "--histogram-method"] # Switch given but no histogram binning method specified
+    fail_args_7 = ["test.tsv", "-hm"] # Switch given but no histogram binning method specified
 
-    @pytest.mark.parametrize("args", [fail_args_1, fail_args_2, fail_args_3, fail_args_4])
+    @pytest.mark.parametrize("args", [fail_args_1, fail_args_2, fail_args_3, fail_args_4, fail_args_5, fail_args_6, fail_args_7])
     def test_fail_args(self, args):
         """Checks that argparse fails for incorrect arguments."""
         with pytest.raises(SystemExit):
