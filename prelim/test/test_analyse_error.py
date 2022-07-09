@@ -19,10 +19,10 @@ class TestStatsFunctions:
     """Tests the functions which calculate statistics (i.e. l^2 norm, l^infinity norm, and mean)."""
     
     # Test parameters for test_2_norm
-    l2_1 = (np.array([1.0, 1.0, 1.0, 1.0]), 2.0) # 1^2 = 1, sum is 4, sqrt(4) == 2
-    l2_2 = (np.array([2.0, 2.0]), np.sqrt(8.0)) # 2^2 = 4, sum is 8
-    l2_3 = (np.array([5.0, 1.5, 3.22, 5.6]), np.sqrt(68.9784)) # Sum is 68.9784
-    l2_4 = (np.array([-2.0, 2.0]), np.sqrt(8.0)) # 2^2 == 4, (-2)^2 == 4, sum is 8 (i.e. check that negative numbers are squared correctly)
+    l2_1 = (np.array([1.0, 1.0, 1.0, 1.0]), 2.0)
+    l2_2 = (np.array([2.0, 2.0]), 2.0) # 2^2 = 4, sum is 8, mean is 4, sqrt(4) is 2
+    l2_3 = (np.array([5.0, 1.5, 3.22, 5.6]), np.sqrt(np.mean(np.array([5.0, 1.5, 3.22, 5.6]) ** 2)))
+    l2_4 = (np.array([-2.0, 2.0]), 2.0) # 2^2 = 4, (-2)^2 = 4, sum = 8, mean = 4.0, sqrt(4) = 2
 
     @pytest.mark.parametrize("arr,l2", [l2_1, l2_2, l2_3, l2_4])
     def test_l_2_norm(self, arr, l2):
