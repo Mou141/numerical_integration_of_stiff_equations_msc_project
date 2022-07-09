@@ -18,7 +18,7 @@ def l_infinity_norm(x):
 ErrorStatsTuple = namedtuple("ErrorStatsTuple", ["l2", "l_inf", "mean"])
 
 def calc_err_stats(abs_err):
-    """Calculates the l^2 norm, l_infinity_norm, and mean of the given array of absolute error values.
+    """Calculates the l^2 norm, l_infinity_norm, and mean of the given array of linear error values.
         
         Returns:
             An ErrorStatsTuple instance containing "l2", "l_inf", and "mean" in that order."""
@@ -33,12 +33,12 @@ def parse_cmd_args(args=None):
             args, optional: Arguments to parse or None to use command line arguments.
 
         Returns:
-            data_file: Path to the file which contains the absolute error data.
+            data_file: Path to the file which contains the linear error data.
             graph_file: Path to save the graph to, or None if no path was specified."""
     
-    parser = argparse.ArgumentParser(description="Performs statistical analysis on absolute error data.")
+    parser = argparse.ArgumentParser(description="Performs statistical analysis on linear error data.")
 
-    parser.add_argument("data_file", type=str, help="File to load absolute errors from.")
+    parser.add_argument("data_file", type=str, help="File to load linear errors from.")
     parser.add_argument("--graph-file", dest="graph_file", type=str, help="File to write histogram to.", default=None, required=False)
 
     if args is None: # If command line arguments should be used...
@@ -49,7 +49,7 @@ def parse_cmd_args(args=None):
     return parsed.data_file, parsed.graph_file
 
 def read_data_file(file_path):
-    """Reads absolute error data from the specified file and returns a 2D array organised by dimension."""
+    """Reads linear error data from the specified file and returns a 2D array organised by dimension."""
     
     data = np.loadtxt(file_path) # Read the data from file
 
@@ -57,13 +57,13 @@ def read_data_file(file_path):
         return np.array([data]) # Wrap it in another array so that it is a 2D array
 
     else: # If data is 2D...
-        return data.T # Transpose it so that columns and rows are switched (i.e. data[0] will return the errors in y1, data[1] the errors in y[2] etc.)
+        return data.T # Transpose it so that columns and rows are switched (i.e. data[0] will return the errors in y1, data[1] the errors in y2 etc.)
 
 def make_histogram(data, file_path=None, bins=10):
     """Plots histograms of the absolute error data, one histogram for each dimension.
         
         Arguments:
-            data: The absolute error data arranged by dimension.
+            data: The linear error data arranged by dimensions of the original IVP solution.
             file_path, optional: The file to save the graphs to, or None if the graph should be displayed instead (default: None).
             bins, optional: The number of bins to place the histogram values in (default: 10)."""
 
