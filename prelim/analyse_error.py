@@ -34,19 +34,21 @@ def parse_cmd_args(args=None):
 
         Returns:
             data_file: Path to the file which contains the linear error data.
-            graph_file: Path to save the graph to, or None if no path was specified."""
+            graph_file: Path to save the graph to, or None if no path was specified.
+            hist_method: Histogram binning method to use."""
     
     parser = argparse.ArgumentParser(description="Performs statistical analysis on linear error data.")
 
     parser.add_argument("data_file", type=str, help="File to load linear errors from.")
-    parser.add_argument("--graph-file", dest="graph_file", type=str, help="File to write histogram to.", default=None, required=False)
+    parser.add_argument("-gf", "--graph-file", dest="graph_file", type=str, help="File to write histogram to.", default=None, required=False)
+    parser.add_argument("-hm", "--histogram-method", dest="hist_method", type=str, default="sqrt", help="Histogram binning method to use (see NumPy documentation).", required=False)
 
     if args is None: # If command line arguments should be used...
         parsed = parser.parse_args()
     else:
         parsed = parser.parse_args(args)
     
-    return parsed.data_file, parsed.graph_file
+    return parsed.data_file, parsed.graph_file, parsed.hist_method
 
 def read_data_file(file_path):
     """Reads linear error data from the specified file and returns a 2D array organised by dimension."""
@@ -59,13 +61,13 @@ def read_data_file(file_path):
     else: # If data is 2D...
         return data.T # Transpose it so that columns and rows are switched (i.e. data[0] will return the errors in y1, data[1] the errors in y2 etc.)
 
-def make_histogram(data, file_path=None, bins=10):
+def make_histogram(data, file_path=None, bins="sqrt"):
     """Plots histograms of the absolute error data, one histogram for each dimension.
         
         Arguments:
             data: The linear error data arranged by dimensions of the original IVP solution.
             file_path, optional: The file to save the graphs to, or None if the graph should be displayed instead (default: None).
-            bins, optional: The number of bins to place the histogram values in (default: 10)."""
+            bins, optional: The number of bins to place the histogram values in, or else the binning method to use (see https://numpy.org/doc/stable/reference/generated/numpy.histogram_bin_edges.html#numpy.histogram_bin_edges). (default: "sqrt")."""
 
     ndim = len(data[:]) # Get the number of dimensions in the error data
 
@@ -113,18 +115,19 @@ def print_stats(data):
             print("\tl_inf: {0}".format(l_inf))
             print("\tmean: {0}".format(mean))
 
-def main(data_file_path, graph_file_path=None):
+def main(data_file_path, graph_file_path=None, bins="sqrt"):
     """Reads the specified data file, performs statistics on the data, and plots histogram(s) of it.
         
         Arguments:
             data_file_path: Path of data file to read.
-            graph_file_path, optional: Path to save graph to or None to display it instead (default None)."""
-    
+            graph_file_path, optional: Path to save graph to or None to display it instead (default: None).
+            bins, optional: Number of histogram bins to use, or binning method to use (default: "sqrt")."""
+
     data = read_data_file(data_file_path) # Read the data from file
 
     print_stats(data) # Print statistics on the data
-    make_histogram(data, graph_file_path) # Make a histogram of the data
+    make_histogram(data, file_path=graph_file_path, bins=bins) # Make a histogram of the data
 
 if __name__ == "__main__":
-    data_path, graph_path = parse_cmd_args()
-    main(data_path, graph_path)
+    data_path, graph_path, bins = parse_cmd_args()
+    main(data_path, graph_path, bins)
