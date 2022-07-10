@@ -1,0 +1,1 @@
+"""Generates "continuous" numerical solutions and compares them to the analytical solution for a specified IVP."""
