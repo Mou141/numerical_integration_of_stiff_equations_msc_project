@@ -3,6 +3,7 @@ import numpy as np # For arrays and maths
 import test_ivp # For test_integrators and INTEGRATORS
 import stiff_functions # For IVPTuple
 import calc_error # For linear_error and fractional_error
+import matplotlib.pyplot as plt # For plotting graphs
 
 def get_continous_solutions(t_cont, results):
     """Calculates the continuous numerical solutions for each method over the integration range."""
@@ -76,6 +77,36 @@ def save_data(t_cont, y_analytical, results, cont_solutions, cont_errors):
     save_results(results) # Save the (discrete) numerical solutions to file
     save_continuous_and_error(cont_solutions, cont_errors) # Save the (continous) numerical solutions to file and the associated linear and fractional errors
 
+def plot_error(ndim, t_cont, cont_errors):
+    """Plots a graph of the linear error as a function of t and then displays it.
+        
+        Arguments:
+            ndim: Number of dimensions of the IVP (must be 1 or greater).
+            t_cont: Array containing t-values for continuous solution.
+            cont_errors: Dictionary containing linear and fractional errors for each method (only linear errors are actually used)."""
+    
+    figure, ax = plt.subplots(1, ndim, sharey=True) # Create 1 subplot for each dimension of the IVP
+
+    if ndim == 1: # If there is only 1 dimension...
+        ax.set_ylabel("err(y)") # Set the label of the y-axis to err(y)
+        ax = [ax] # Put ax in a list so that it can still be subscripted
+
+    else: # If there is more than 1 dimension...
+        for i in range(0, ndim): # For each dimension...
+            ax[i].set_ylabel("err(y{0})".format(i+1))
+    
+    ax[0].set_xlabel("t") # Set the label for the x-axis (only one label needed)
+
+    methods = list(cont_errors.keys()) # Get a list containing the names of all the methods
+
+    figure.legend(methods, loc="upper right") # Add a legend to the graph with the names of all the methods in order
+
+    for lin_err, _ in map(cont_errors.get, methods): # For each method's tuple of error values...
+        for i in range(0, ndim): # For each dimension of the solution...
+            ax[i].plot(t_cont, lin_err[i]) # Plot the linear error in that dimension
+
+    plt.show() # Display the graph
+
 def test_integrators_continuous(end_t, ivp, N, integrators=test_ivp.INTEGRATORS, atol=1.0e-06, rtol=1.0e-03):
     """Tests the specified integrators on the specified IVP over the specified integration range, generating continuous, interpolated solutions which are then tests with the specified number of samples.
 
@@ -98,6 +129,7 @@ def test_integrators_continuous(end_t, ivp, N, integrators=test_ivp.INTEGRATORS,
     cont_errors = get_errors(y_analytical, cont_solutions)
 
     save_data(t_cont, y_analytical, results, cont_solutions, cont_errors) # Save data to file
+    plot_error(ivp.ndim, t_cont, cont_errors) # Plot the linear error on a graph and display it
 
 if __name__ == "__main__":
     test_integrators_continuous(1.5, stiff_functions.STIFF_IVP, 1000000)
