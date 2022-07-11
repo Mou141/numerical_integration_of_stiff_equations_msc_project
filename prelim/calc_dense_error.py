@@ -120,7 +120,7 @@ def test_integrators_continuous(end_t, ivp, N, integrators=test_ivp.INTEGRATORS,
 
     ivp = stiff_functions.IVPTuple._make(ivp) # Convert ivp to an IVP Tuple if it isn't one
 
-    t_cont = np.linspace(ivp.y0, end_t, N) # Create an array of t points of length N, linearly spaced between y0 and end_t
+    t_cont = np.linspace(ivp.t0, end_t, N) # Create an array of t points of length N, linearly spaced between t0 and end_t
     y_analytical = ivp.SolutionFunction(t_cont) # Plot the analytical solution
 
     # Perform the integrations and get the numerical solutions...
