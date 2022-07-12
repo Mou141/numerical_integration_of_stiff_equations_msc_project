@@ -85,7 +85,7 @@ def plot_error(ndim, t_cont, cont_errors):
             t_cont: Array containing t-values for continuous solution.
             cont_errors: Dictionary containing linear and fractional errors for each method (only linear errors are actually used)."""
     
-    figure, ax = plt.subplots(1, ndim, sharey=True) # Create 1 subplot for each dimension of the IVP
+    figure, ax = plt.subplots(ndim, 1, sharex=True) # Create 1 subplot for each dimension of the IVP
 
     if ndim == 1: # If there is only 1 dimension...
         ax.set_ylabel("err(y)") # Set the label of the y-axis to err(y)
