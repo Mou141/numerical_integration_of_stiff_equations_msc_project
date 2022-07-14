@@ -22,6 +22,7 @@ def parse_args(args=None):
         "--use-static",
         dest="use_static",
         help="Use the static initial values in robertson_ivp.TEST_IVP instead of randomly generated values.",
+        type="store_true",
     )
 
     if args is None:
