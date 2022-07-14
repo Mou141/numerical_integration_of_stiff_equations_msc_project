@@ -44,24 +44,14 @@ def get_constraint(y):
     return y[0] + y[1] + y[2]
 
 
-def add_to_graph(ax, t, lin_err):
-    """Plots the linear error of the solution to the graphs, one for each dimension"""
-
-    # For each dimension of the IVP, get the subplot and linear error
-    for axes, err in zip(ax, lin_err[:]):
-        axes.plot(t, err)
-
-
 def save_data(method, t, y, lin_err):
-    """Saves t, y, and lin_err to files named by method (transposing y and lin_err into column format)."""
+    """Saves the t, y, and linear error data of the specified solution to file (transposing y so that the dimensions are the columns rather than rows)."""
 
-    files = [f.format(method) for f in ("t_{0}.tsv", "y_{0}.tsv", "lin_err_{0}.tsv")]
+    files = [f.format(method) for f in ("t_{0}.tsv", "y_{0}.tsv", "lin_err{0}.tsv")]
+    datasets = [t, y.T, lin_err]
 
-    # Transpose y and lin_err so the dimensions are the columns, rather than the rows
-    data = [t, y.T, lin_err.T]
-
-    for f, d in zip(files, data):
-        np.savetxt(f, d, delimiter="\t")
+    for f, data in zip(files, datasets):
+        np.savetxt(f, data, delimiter="\t")
 
 
 def main():
@@ -72,21 +62,10 @@ def main():
     # The end_t value of 1.0E04 is taken from the graph in figure 104(i) in Butcher, J. C. (2016). Numerical methods for ordinary differential equations / J.C. Butcher (Third edition. ed.). Wiley.
     results = test_ivp.test_integrators(1.0e04, ivp)
 
-    # Subplot for each dimension of IVP, with shared x axis
-    figure, ax = plt.subplots(3, 1, sharex=True)
+    plt.set_xlabel("t")
+    plt.set_ylabel("Linear Error")
 
-    # Only set x label once, axes share it
-    ax[0].set_xlabel("t")
-
-    # y label for each subplot
-    ax[0].set_ylabel("err(y1)")
-    ax[1].set_ylabel("err(y2)")
-    ax[2].set_ylabel("err(y3)")
-
-    # Put methods in list to fix order of keys
-    methods = list(results.keys())
-
-    for method, solution in zip(methods, map(results.get, methods)):
+    for method, solution in results.items():
         if solution.success:
             print("Method '{0}' completed successfully.".format(method))
 
@@ -100,7 +79,7 @@ def main():
             constraint = get_constraint(solution.y)
             lin_err = calc_error.linear_error(constraint, 1.0)
 
-            add_to_graph(ax, solution.t, lin_err)
+            plt.plot(solution.t, lin_err, label=method)
             save_data(method, solution.t, solution.y, lin_err)
 
         else:
@@ -110,10 +89,7 @@ def main():
                 )
             )
 
-            # Empty graph plot to keep legend ordering correct
-            add_to_graph(ax, np.array([]), np.array([[], [], []]))
-
-    plt.legend(methods, loc="upper right")
+    plt.legend(loc="best")
     plt.show()
 
 
