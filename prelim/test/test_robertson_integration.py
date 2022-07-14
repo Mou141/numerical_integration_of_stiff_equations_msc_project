@@ -9,6 +9,7 @@ import robertson_ivp
 import robertson_integration
 
 import pytest
+import numpy as np
 
 
 class TestCmdArgs:
@@ -30,7 +31,7 @@ class TestCmdArgs:
 
         ivp = robertson_integration.parse_args([])
 
-        assert ivp.y0 != robertson_ivp.TEST_IVP.y0
+        assert np.any(ivp.y0 != robertson_ivp.TEST_IVP.y0)
         assert ivp.ODEFunction is robertson_ivp.initial_value_problem
         assert not ivp.has_analytical_solution
         assert ivp.t0 == pytest.approx(robertson_ivp.TEST_IVP.t0)
