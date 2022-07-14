@@ -101,6 +101,7 @@ def main():
             lin_err = calc_error.linear_error(constraint, 1.0)
 
             add_to_graph(ax, solution.t, lin_err)
+            save_data(method, solution.t, solution.y, lin_err)
 
         else:
             print(
