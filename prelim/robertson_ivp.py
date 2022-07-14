@@ -35,7 +35,9 @@ def get_random_y0():
 
     y0 = np.array([y01, y02, y03])
 
-    return rng.shuffle(y0)  # Assign random numbers to y0 indices at random
+    rng.shuffle(y0)  # Assign random numbers to y0 indices at random
+
+    return y0
 
 
 def get_robertson_ivp():
