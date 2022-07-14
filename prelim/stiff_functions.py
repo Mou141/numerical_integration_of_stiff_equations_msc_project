@@ -20,7 +20,8 @@ class IVPTuple(namedtuple("IVPTuple", ["ODEFunction", "SolutionFunction", "y0", 
     @property
     def has_analytical_solution(self):
         """Returns True if IVP has an analytical solution."""
-        return (self.SolutionFunction is not None)
+        return self.SolutionFunction is not None
+
 
 # There is a 1D initial value problem which is stiff and also has an analytical solution: y'(t) = -15y(t), t >= 0, y(0) = 1. The solution being y(t) = exp(-15t)
 
