@@ -14,8 +14,12 @@ import pytest
 class TestCmdArgs:
     """Test parsing of command line arguments by robertson_integration.parse_args."""
 
-    # Test with both long and short option
-    @pytest.mark.parametrize("args", [["-us"], ["--use-static"]])
+    # short option
+    pass_args_1 = ["-us"]
+    # long option
+    pass_args_2 = ["--use-static"]
+
+    @pytest.mark.parametrize("args", [pass_args_1, pass_args_2])
     def test_parse_args_static(self, args):
         """Tests that the specified command line arguments cause robertson_integration.parse_args to return robertson_ivp.TEST_IVP."""
 
