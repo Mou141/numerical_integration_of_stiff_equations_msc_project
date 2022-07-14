@@ -11,7 +11,7 @@ import robertson_integration
 import pytest
 
 
-class CmdArgsTest:
+class TestCmdArgs:
     """Test parsing of command line arguments by robertson_integration.parse_args."""
 
     # Test with both long and short option
