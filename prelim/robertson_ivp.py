@@ -3,7 +3,7 @@ import stiff_functions
 import numpy as np
 
 
-def initial_value_problem(t, y, k1=0.04, k2=1.0e-04, k3=3.0e07):
+def initial_value_problem(t, y, k1=0.04, k2=1.0e04, k3=3.0e07):
     """The Robertson Chemical Kinetics stiff IVP."""
 
     # Unpack dimensions of IVP for readability
