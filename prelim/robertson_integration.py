@@ -48,7 +48,7 @@ def get_constraint(y):
 def save_data(method, t, y, lin_err):
     """Saves the t, y, and linear error data of the specified solution to file (transposing y so that the dimensions are the columns rather than rows)."""
 
-    files = [f.format(method) for f in ("t_{0}.tsv", "y_{0}.tsv", "lin_err{0}.tsv")]
+    files = [f.format(method) for f in ("t_{0}.tsv", "y_{0}.tsv", "lin_err_{0}.tsv")]
     datasets = [t, y.T, lin_err]
 
     for f, data in zip(files, datasets):
