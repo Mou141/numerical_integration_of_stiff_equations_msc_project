@@ -61,7 +61,7 @@ def main():
     print("y0 = {0}".format(str(ivp.y0)))
 
     # The end_t value of 1.0E04 is taken from the graph in figure 104(i) in Butcher, J. C. (2016). Numerical methods for ordinary differential equations / J.C. Butcher (Third edition. ed.). Wiley.
-    results = test_ivp.test_integrators(1.0, ivp)
+    results = test_ivp.test_integrators(1.0e04, ivp)
 
     plt.xlabel("t")
     plt.ylabel("Linear Error")
