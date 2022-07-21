@@ -190,8 +190,35 @@ def make_l2_histograms(stats_dict):
     getter = lambda m: stats_dict[m].l2
 
     for method, l2, graph in zip(methods, map(getter, methods), ax):
-        graph.set_xlabel("l2 {0}".format(method))
+        graph.set_title(method)
+        graph.set_xlabel("\(l^2\)", usetex=True)
         graph.hist(l2, bins="doane")
+
+    plt.show()
+
+
+def make_l_inf_histograms(stats_dict):
+    """Plots a histogram of the l^inf values for each method using the doana bin edge calculation method."""
+
+    # One plot for each integration method, arranged horizontally, sharing a y-axis (where the counts for each bin are)
+    figure, ax = plt.subplots(1, ncols=len(stats_dict), sharey=True)
+
+    if len(stats_dict) == 1:
+        # Put ax in a list so it can be subscripted
+        ax = [ax]
+
+    # Only set y-label once since y-axis is shared
+    ax[0].set_ylabel("N")
+
+    methods = list(stats_dict.keys())
+
+    # Gets the stats for the specified method from the dictionary and returns the l_inf values specifically
+    getter = lambda m: stats_dict[m].l_inf
+
+    for method, l_inf, graph in zip(methods, map(getter, methods), ax):
+        graph.set_title(method)
+        graph.set_xlabel("\(l^{\infty}\)", usetex=True)
+        graph.hist(l_inf, bins="doane")
 
     plt.show()
 
@@ -201,6 +228,7 @@ def main():
     y0, stats = find_stats(n)
     save_data(y0, stats)
     make_l2_histograms(stats)
+    make_l_inf_histograms(stats)
 
 
 if __name__ == "__main__":
