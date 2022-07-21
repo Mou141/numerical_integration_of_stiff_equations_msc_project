@@ -184,15 +184,21 @@ def make_l2_histograms(stats_dict):
     # Only set y-label once since y-axis is shared
     ax[0].set_ylabel("N")
 
+    # Log axis for y, linear for x
+    ax[0].set_yscale("log")
+
     methods = list(stats_dict.keys())
 
     # Gets the stats for the specified method from the dictionary and returns the l2 values specifically
     getter = lambda m: stats_dict[m].l2
 
     for method, l2, graph in zip(methods, map(getter, methods), ax):
-        graph.set_title(method)
+        # Remove nan values
+        l2_filtered = l2[not np.isnan(l2)]
+
+        graph.set_title("{0} (N = {1})".format(method, len(l2_filtered)))
         graph.set_xlabel("l^2")
-        graph.hist(l2, bins="doane")
+        graph.hist(l2_filtered, bins="doane")
 
     plt.show()
 
@@ -210,15 +216,21 @@ def make_l_inf_histograms(stats_dict):
     # Only set y-label once since y-axis is shared
     ax[0].set_ylabel("N")
 
+    # log axis for y, linear for x
+    ax[0].set_yscale("log")
+
     methods = list(stats_dict.keys())
 
     # Gets the stats for the specified method from the dictionary and returns the l_inf values specifically
     getter = lambda m: stats_dict[m].l_inf
 
     for method, l_inf, graph in zip(methods, map(getter, methods), ax):
-        graph.set_title(method)
+        # Filter out nan values
+        l_inf_filtered = l_inf[not np.isnan(l_inf)]
+
+        graph.set_title("{0} (N = {1})".format(method, len(l_inf_filtered)))
         graph.set_xlabel("l^∞")
-        graph.hist(l_inf, bins="doane")
+        graph.hist(l_inf_filtered, bins="doane")
 
     plt.show()
 
