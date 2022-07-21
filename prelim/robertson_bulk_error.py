@@ -194,7 +194,7 @@ def make_l2_histograms(stats_dict):
 
     for method, l2, graph in zip(methods, map(getter, methods), ax):
         # Remove nan values
-        l2_filtered = l2[not np.isnan(l2)]
+        l2_filtered = l2[np.logical_not(np.isnan(l2))]
 
         graph.set_title("{0} (N = {1})".format(method, len(l2_filtered)))
         graph.set_xlabel("l^2")
@@ -204,7 +204,7 @@ def make_l2_histograms(stats_dict):
 
 
 def make_l_inf_histograms(stats_dict):
-    """Plots a histogram of the l^inf values for each method using the doana bin edge calculation method."""
+    """Plots a histogram of the l^inf values for each method using the doane bin edge calculation method."""
 
     # One plot for each integration method, arranged horizontally, sharing a y-axis (where the counts for each bin are)
     figure, ax = plt.subplots(1, ncols=len(stats_dict), sharey=True)
@@ -226,7 +226,7 @@ def make_l_inf_histograms(stats_dict):
 
     for method, l_inf, graph in zip(methods, map(getter, methods), ax):
         # Filter out nan values
-        l_inf_filtered = l_inf[not np.isnan(l_inf)]
+        l_inf_filtered = l_inf[np.logical_not(np.isnan(l_inf))]
 
         graph.set_title("{0} (N = {1})".format(method, len(l_inf_filtered)))
         graph.set_xlabel("l^∞")
