@@ -114,12 +114,15 @@ class TestRobertsonStatsTuple:
         assert len(t.njev) == n
         assert len(t.nlu) == n
 
-    def test_nan(self):
-        """Checks that l2 and l_inf are initialised with np.nan."""
+    def test_nan_and_zero(self):
+        """Checks that l2 and l_inf are initialised with np.nan and nfev, njev, and nlu with 0."""
         t = robertson_bulk_error.RobertsonStatsTuple._create_tuple(10)
 
         assert all_nan(t.l2)
         assert all_nan(t.l_inf)
+        assert np.all(t.nfev == 0)
+        assert np.all(t.njev == 0)
+        assert np.all(t.nlu == 0)
 
     def test_types(self):
         """Checks that the types of the arrays are correct."""
