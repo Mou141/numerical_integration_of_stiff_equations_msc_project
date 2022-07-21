@@ -191,7 +191,7 @@ def make_l2_histograms(stats_dict):
 
     for method, l2, graph in zip(methods, map(getter, methods), ax):
         graph.set_title(method)
-        graph.set_xlabel("\(l^2\)", usetex=True)
+        graph.set_xlabel("l^2")
         graph.hist(l2, bins="doane")
 
     plt.show()
@@ -217,7 +217,7 @@ def make_l_inf_histograms(stats_dict):
 
     for method, l_inf, graph in zip(methods, map(getter, methods), ax):
         graph.set_title(method)
-        graph.set_xlabel("\(l^{\infty}\)", usetex=True)
+        graph.set_xlabel("l^∞")
         graph.hist(l_inf, bins="doane")
 
     plt.show()
