@@ -68,12 +68,12 @@ class RobertsonStatsTuple(
     @classmethod
     def _create_tuple(cls, n):
         """Creates a RobertsonStatsTuple instance to hold the data for n executions of an integration method."""
-        # Use np.nan to indicate missing data
+        # Use np.nan to indicate missing data for floats and 0 for ints
         l2 = np.full(shape=(n,), fill_value=np.nan, dtype=float)
         l_inf = np.full(shape=(n,), fill_value=np.nan, dtype=float)
-        nfev = np.full(shape=(n,), fill_value=np.nan, dtype=int)
-        njev = np.full(shape=(n,), fill_value=np.nan, dtype=int)
-        nlu = np.full(shape=(n,), fill_value=np.nan, dtype=int)
+        nfev = np.zeros(shape=(n,), dtype=int)
+        njev = np.zeros(shape=(n,), dtype=int)
+        nlu = np.zeros(shape=(n,), dtype=int)
 
         return cls._make((l2, l_inf, nfev, njev, nlu))
 
@@ -119,8 +119,8 @@ def perform_integration(ivp, methods):
                     method, str(ivp.y0)
                 )
             )
-            # nan to indicate error
-            out[method] = np.nan, np.nan, np.nan, np.nan, np.nan
+            # nan to indicate error for floats and 0 for ints
+            out[method] = np.nan, np.nan, 0, 0, 0
 
     return out
 
