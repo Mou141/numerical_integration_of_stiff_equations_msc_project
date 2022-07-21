@@ -108,7 +108,7 @@ def perform_integration(ivp, methods):
             constraint = robertson_integration.get_constraint(solution.y)
             lin_err = calc_error.linear_error(constraint, 1.0)
 
-            l2 = analyse_error.l2(lin_err)
+            l2 = analyse_error.l_2_norm(lin_err)
             l_inf = analyse_error.l_infinity_norm(lin_err)
 
             out[method] = l2, l_inf, solution.nfev, solution.njev, solution.nlu
