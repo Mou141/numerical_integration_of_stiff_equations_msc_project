@@ -152,7 +152,7 @@ def find_stats(n, methods=test_ivp.INTEGRATORS):
 def save_data(y0, stats):
     """Saves one file, "y0.tsv", which contains all the randomly generated initial values and files for each method which contain the l2, l_inf, nfev, njev, and nlu data."""
 
-    np.savetxt("y0.tsv", y0.T, delimiter="\t")
+    np.savetxt("y0.tsv", y0, delimiter="\t")
 
     for method, stats_tuple in stats.items():
         # Use generator expression here rather than list comprehension to reduce number of loops
