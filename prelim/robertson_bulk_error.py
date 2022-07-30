@@ -47,11 +47,11 @@ def parse_args(args=None):
     return parsed.n
 
 
-def generate_robertson_ivps(n):
+def generate_robertson_ivps(n, gen_func=robertson_ivp.get_random_y0):
     """Returns an iterator that produces n instances of the Robertson IVP with randomly chosen initial values."""
 
     for _ in range(n):
-        yield robertson_ivp.get_robertson_ivp()
+        yield robertson_ivp.get_robertson_ivp(gen_func=gen_func)
 
 
 class RobertsonStatsTuple(
