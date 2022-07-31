@@ -2,6 +2,7 @@
 
 from pathlib import Path
 import sys
+import itertools
 
 # Add the parent directory of this file's directory to the python path (because robertson_ivp.py is in that directory)
 sys.path.append(str(Path(__file__).resolve().parent.parent))
@@ -28,18 +29,26 @@ class TestRandom:
     # How many times to repeat each of the tests below
     test_count = 10
 
-    # Repeat test test_count times, marking the test with the value of execution_number
-    @pytest.mark.parametrize("execution_number", range(1, test_count + 1))
-    def test_get_random_y0(self, execution_number):
-        """Tests that robertson_ivp.get_random_y0 returns a y0 where sum(y0) == 1.0."""
+    # Contains tuples which numbers an execution of one of the functions [(1, f1), (1, f2), (2, f1), (2, f2)...]
+    test_values = list(
+        itertools.product(
+            range(1, test_count + 1),
+            [robertson_ivp.get_random_y0, robertson_ivp.get_safe_random_y0],
+        )
+    )
 
-        y0 = robertson_ivp.get_random_y0()
+    # Repeat test test_count times, for each generator function marking the test with the value of execution_number
+    @pytest.mark.parametrize("execution_number,gen_func", test_values)
+    def test_get_random_y0(self, execution_number, gen_func):
+        """Tests that the specified function returns a y0 where sum(y0) == 1.0."""
+
+        y0 = gen_func()
         assert self._fulfils_constraint(y0)
 
     # Repeat as for previous test
-    @pytest.mark.parametrize("execution_number", range(1, test_count + 1))
-    def test_get_robertson_ivp(self, execution_number):
-        """Tests that robertson_ivp.get_robertson_ivp returns an IVPTuple where sum(y0) == 1.0."""
+    @pytest.mark.parametrize("execution_number,gen_func", test_values)
+    def test_get_robertson_ivp(self, execution_number, gen_func):
+        """Tests that robertson_ivp.get_robertson_ivp returns an IVPTuple where sum(y0) == 1.0 for the specified generator function."""
 
-        ivp = robertson_ivp.get_robertson_ivp()
+        ivp = robertson_ivp.get_robertson_ivp(gen_func=gen_func)
         assert self._fulfils_constraint(ivp.y0)
