@@ -37,9 +37,7 @@ def load_data(y0_file, filter_file):
     """Loads y0 data from y0_file and nan_array from filter_file and then checks that the arrays are the correct shapes and lengths."""
 
     y0 = np.loadtxt(y0_file)
-
-    # Transpose the nan_array when it is loaded so that its shape is (n, 3) rather than (3, n)
-    nan_array = np.loadtxt(filter_file).T
+    nan_array = np.loadtxt(filter_file)
 
     # Check shapes and lengths conform to requirements described in filter_y0
     if len(y0.shape) != 2:
