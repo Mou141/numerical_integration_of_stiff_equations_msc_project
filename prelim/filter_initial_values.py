@@ -43,6 +43,7 @@ def load_data(y0_file, filter_file):
     y0 = np.loadtxt(y0_file)
     nan_array = np.loadtxt(filter_file)
 
+    # Check shapes and lengths conform to requirements described in filter_y0
     if len(y0.shape) != 2:
         raise ValueError(
             "Data in '{0}' is a {1} dimensional array (should have 2 dimensions).".format(
@@ -80,6 +81,7 @@ def filter_y0(y0, nan_array):
     # True where nan_array does not contain nan values
     mask = np.logical_not(np.isnan(nan_array))
 
+    # Filters the first dimension of the array by applying the boolean mask
     return y0[:][mask]
 
 
