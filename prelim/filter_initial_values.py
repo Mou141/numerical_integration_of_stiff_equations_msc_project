@@ -15,13 +15,11 @@ def parse_args(args=None):
     parser.add_argument(
         "Y0_FILE",
         type=str,
-        required=True,
         help="File containing the y0 values to filter.",
     )
     parser.add_argument(
         "FILTER_FILE",
         type=str,
-        required=True,
         help="File containing the l2 or l_inf values to filter the y0 values with.",
     )
 
