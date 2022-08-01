@@ -16,14 +16,12 @@ def parse_args(args=None):
         "Y0_FILE",
         type=str,
         required=True,
-        dest="y0_file",
         help="File containing the y0 values to filter.",
     )
     parser.add_argument(
         "FILTER_FILE",
         type=str,
         required=True,
-        dest="filter_file",
         help="File containing the l2 or l_inf values to filter the y0 values with.",
     )
 
@@ -34,7 +32,7 @@ def parse_args(args=None):
     else:
         parsed = parser.parse_args(args=args)
 
-    return parsed.y0_file, parsed.filter_file
+    return parsed.Y0_FILE, parsed.FILTER_FILE
 
 
 def load_data(y0_file, filter_file):
