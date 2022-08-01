@@ -23,7 +23,7 @@ class TestCmdArgs:
     def test_successful_args(self, args):
         """Checks that the arguments passed to filter_initial_values.parse_args are returned correctly."""
 
-        assert filter_initial_values.parse_args(args) == args
+        assert filter_initial_values.parse_args(args) == tuple(args)
 
     # Arguments that should fail
     # Empty
