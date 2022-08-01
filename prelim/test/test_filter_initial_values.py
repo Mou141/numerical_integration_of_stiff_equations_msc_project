@@ -51,9 +51,9 @@ class TestFilter:
         rng = np.random.default_rng()
 
         # Function for populating array
-        # a, b are coordinates within the array (and are ignored)
+        # a is the index of the array
         # The function returns either 1.0, 0.5, 3.4e-6, or np.nan at random (i.e. approximately a quarter of the values will be np.nan)
-        gen_func = lambda a, b: rng.choice([1.0, 0.5, 3.4e-6, np.nan])
+        gen_func = lambda a: rng.choice([1.0, 0.5, 3.4e-6, np.nan])
 
         return np.fromfunction(gen_func, shape=(n,), dtype=float)
 
