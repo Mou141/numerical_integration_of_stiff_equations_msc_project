@@ -7,8 +7,17 @@ import numpy as np
 
 
 def phi(z):
-    """Common mathematical function for exponential integration methods.
-
-    Returns: (e^z - 1)/z"""
+    """Returns: phi(z) = (e^z - 1)/z"""
 
     return (np.exp(z) - 1.0) / z
+
+
+def phi_step_jacob(h, A, j=1.0):
+    """Common function used by mathematical integrators.
+
+        h: Size of the current step.
+        A: Current value of the Jacobian.
+        j, optional: Constant coefficient (defaults to 1.0)
+
+    Returns: phi(j * h * A) (or phi(h * A) if j not specified)"""
+    return phi(j * h * A)
