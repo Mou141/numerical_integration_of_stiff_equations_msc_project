@@ -4,6 +4,7 @@
 # These functions are implemented here so that future integrator implementations can leverage them more easily
 
 import numpy as np
+from warnings import warn
 
 
 def phi(z):
@@ -33,3 +34,18 @@ def phi_step_jacob_hA(hA, j):
         phi(j * hA)"""
 
     return phi(j * hA)
+
+
+def warn_max_step_exceeded(h_abs, max_step):
+    """Warns if the specified stepsize exceeds the maximum and returns the smaller of h_abs and max_step."""
+
+    if h_abs > max_step:
+        warn(
+            "Initial stepsize {0} is greater than maximum {1}. {1} will be used.".format(
+                h_abs, max_step
+            )
+        )
+        return max_step
+
+    else:
+        return h_abs
