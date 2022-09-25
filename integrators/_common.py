@@ -33,3 +33,17 @@ def phi_step_jacob_hA(hA, j):
         phi(j * hA)"""
 
     return phi(j * hA)
+
+
+def wrap_non_autonomous(fun):
+    """Wraps a non-autonomous function of the form fun(t, y) to add a dependency t' = 1."""
+
+    def wrap_func(t, y):
+
+        # Because a t' dependency has been added, t becomes part of y
+        dy = fun(y[-1], y)
+        dt = np.ones(shape=np.shape(y[0]), dtype=y.dtype)
+
+        return np.array([*dy, dt], dtype=y.dtype)
+
+    return wrap_func
