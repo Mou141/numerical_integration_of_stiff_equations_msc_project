@@ -19,5 +19,17 @@ def phi_step_jacob(h, A, j=1.0):
         A: Current value of the Jacobian.
         j, optional: Constant coefficient (defaults to 1.0)
 
-    Returns: phi(j * h * A) (or phi(h * A) if j not specified)"""
+    Returns:
+        phi(j * h * A) (or phi(h * A) if j not specified)"""
+
     return phi(j * h * A)
+
+
+def phi_step_jacob_hA(hA, j):
+    """Same as phi_step_jacob, but takes the product of h and A rather than separate values.
+    For efficient computation of phi(j * h * A) where j changes but h and A don't.
+
+    Returns:
+        phi(j * hA)"""
+
+    return phi(j * hA)
