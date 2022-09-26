@@ -193,15 +193,15 @@ class EXP4(OdeSolver):
         f_y0 = f(y0)
 
         if autonomous:
-            k_1 = phi_1_3 * f_y0
-            k_2 = phi_2_3 * f_y0
-            k_3 = phi * f_y0
+            k_1 = np.matmul(phi_1_3, f_y0)
+            k_2 = np.matmul(phi_2_3, f_y0)
+            k_3 = np.matmul(phi, f_y0)
 
         else:
             # Apply Jacobian only to original function
-            k_1 = np.array([*(phi_1_3 * f_y0[0, -1]), f_y0[-1]], dtype=y0.dtype)
-            k_2 = np.array([*(phi_2_3 * f_y0[0, -1]), f_y0[-1]], dtype=y0.dtype)
-            k_3 = np.array([*(phi * f_y0[0, -1]), f_y0[-1]], dtype=y0.dtype)
+            k_1 = np.array([*np.matmul(phi_1_3, f_y0[0, -1]), f_y0[-1]], dtype=y0.dtype)
+            k_2 = np.array([*np.matmul(phi_2_3, f_y0[0, -1]), f_y0[-1]], dtype=y0.dtype)
+            k_3 = np.array([*np.matmul(phi, f_y0[0, -1]), f_y0[-1]], dtype=y0.dtype)
 
         w_4 = ((-7.0 / 300.0) * k_1) + ((97.0 / 150.0) * k_2) - ((37.0 / 300.0) & k_3)
 
@@ -210,15 +210,15 @@ class EXP4(OdeSolver):
         d_4 = f(u_4) - f_y0 - (hA * w_4)
 
         if autonomous:
-            k_4 = phi_1_3 * d_4
-            k_5 = phi_2_3 * d_4
-            k_6 = phi * d_4
+            k_4 = np.matmul(phi_1_3, d_4)
+            k_5 = np.matmul(phi_2_3, d_4)
+            k_6 = np.matmul(phi, d_4)
 
         else:
             # Apply Jacobian only to original function
-            k_4 = np.array([*(phi_1_3 * d_4[0, -1]), d_4[-1]], dtype=y0.dtype)
-            k_5 = np.array([*(phi_2_3 * d_4[0, -1]), d_4[-1]], dtype=y0.dtype)
-            k_6 = np.array([*(phi * d_4[0, -1]), d_4[-1]], dtype=y0.dtype)
+            k_4 = np.array([*np.matmul(phi_1_3, d_4[0, -1]), d_4[-1]], dtype=y0.dtype)
+            k_5 = np.array([*np.matmul(phi_2_3, d_4[0, -1]), d_4[-1]], dtype=y0.dtype)
+            k_6 = np.array([*np.matmul(phi, d_4[0, -1]), d_4[-1]], dtype=y0.dtype)
 
         w_7 = (
             ((59.0 / 300.0) * k_1)
@@ -231,10 +231,10 @@ class EXP4(OdeSolver):
         d_7 = f(u_7) - f_y0 - (hA * w_7)
 
         if autonomous:
-            k_7 = phi_1_3 * d_7
+            k_7 = np.matmul(phi_1_3, d_7)
 
         else:
-            k_7 = np.array([*(phi_1_3 * d_7[0, -1]), d_7[-1]], dtype=y0.dtype)
+            k_7 = np.array([*np.matmul(phi_1_3, d_7[0, -1]), d_7[-1]], dtype=y0.dtype)
 
         y1 = y0 + h * (k_3 + k_4 - ((4.0 / 3.0) * k_5) + k_6 + ((1.0 / 6.0) * k_7))
 
