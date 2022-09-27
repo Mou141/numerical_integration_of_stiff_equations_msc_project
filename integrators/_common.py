@@ -14,7 +14,7 @@ def phi(z):
 
     z = np.asarray(z)
 
-    return (expm(z) - 1.0) * inv(z)
+    return np.matmul((expm(z) - 1.0), inv(z))
 
 
 def phi_step_jacob(h, A, j=1.0):
