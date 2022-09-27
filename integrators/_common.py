@@ -5,19 +5,23 @@
 
 import numpy as np
 from warnings import warn
+from scipy.linalg import expm
+from numpy.linalg import inv
 
 
 def phi(z):
     """Returns: phi(z) = (e^z - 1)/z"""
 
-    return (np.exp(z) - 1.0) / z
+    z = np.asarray(z)
+
+    return (expm(z) - 1.0) * inv(z)
 
 
 def phi_step_jacob(h, A, j=1.0):
     """Common function used by mathematical integrators.
 
         h: Size of the current step.
-        A: Current value of the Jacobian.
+        A: Current Jacobian matrix.
         j, optional: Constant coefficient (defaults to 1.0)
 
     Returns:
