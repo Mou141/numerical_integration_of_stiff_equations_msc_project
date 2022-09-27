@@ -245,10 +245,13 @@ class EXP4(OdeSolver):
             return y1[0:-1]
 
     def _step_impl(self):
-        t_new = self.t + (self.direction * self.h_abs)
+        converged = False
 
-        A = self.jac(self.t, self.y)
+        while not converged:
+            t_new = self.t + (self.direction * self.h_abs)
 
-        y_new = self._calc_step(
-            self.fun, A, self.h_abs, self.t, self.y, self.autonomous
-        )
+            A = self.jac(self.t, self.y)
+
+            y_new = self._calc_step(
+                self.fun, A, self.h_abs, self.t, self.y, self.autonomous
+            )
