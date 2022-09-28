@@ -26,7 +26,7 @@ def test_solution(t):
 
 
 # Initial value of above differential system
-TEST_Y0 = 1.0
+TEST_Y0 = 2.0
 TEST_T0 = 0.0
 
 
@@ -64,4 +64,4 @@ def main(start_t, end_t, stepsize, y0, fun, sol):
 
 
 if __name__ == "__main__":
-    main(TEST_T0, 10.0, 0.1, TEST_Y0, test_function, test_solution)
+    main(TEST_T0, 10.0, 0.1, np.array([TEST_Y0]), test_function, test_solution)
