@@ -1,19 +1,17 @@
 """A SciPy compatible implementation of the exp4 exponential integrator described in https://epubs.siam.org/doi/10.1137/S1064827595295337."""
-from re import A
+from sre_constants import SUCCESS
 from scipy.sparse import csc_matrix, issparse
 from scipy.optimize._numdiff import group_columns
 from scipy.integrate import OdeSolver
 from scipy.integrate._ivp.common import (
     warn_extraneous,
     validate_max_step,
-    validate_tol,
-    select_initial_step,
     validate_first_step,
+    validate_tol,
     num_jac,
 )
 
 import numpy as np
-import inspect
 
 from ._common import phi_step_jacob_hA, warn_max_step_exceeded
 
@@ -30,95 +28,9 @@ class EXP4(OdeSolver):
         first_step, optional: Initial stepsize to use. If not specified, an initial step will be chosen algorithmically.
         max_step, optional: Maximum allowed stepsize. Defaults to np.inf (i.e. unconstrained).
         rtol and atol, optional: Allowed relative and absolute tolerances. Default to 1e-3 and 1e-6 respectively (see scipy.integrate.solve_ivp for details).
-        jac, optional: Jacobian matrix of the right hand side of the system. Can be a constant matrix, a function which returns a matrix, or None (the default). If None then the jacobian is estimated.
+        jac, optional: This method does not support specifying the Jacobian. Values other than None will raise a ValueError.
         jac_sparsity, optional: If None, the Jacobian matrix is not sparse. If a matrix is passsed defining the sparsity structure of the jacobian, this is used to speed up computation (i.e. most elements of matrix will be known to be 0).
-        vectorized, optional: True if fun is implemented as a vectorized function (defaults to False).
-        autonomous, optional: True if fun is a function of the form fun(y) (i.e. doesn't depend on t). Defaults to False."""
-
-    def _handle_jac(self, jac, jac_sparsity):
-        """Takes the values of jac and jac_sparsity passed to __init__ and returns a function of the form jac(t, y).
-
-        Returns:
-            if jac is None, a function that estimates the Jacobian.
-            if jac is constant, a dummy function which returns it.
-            if jac is callable, returns it."""
-
-        if jac is None:
-            self.jac_factor = None
-
-            if jac_sparsity is not None:
-                jac_sparsity = csc_matrix(jac_sparsity)
-
-                groups = group_columns(jac_sparsity)
-                jac_sparsity = (jac_sparsity, groups)
-
-                def estimate_wrapper(t, y):
-                    self.njev += 1
-
-                    j, self.jac_factor = num_jac(
-                        self.fun_vectorized,
-                        t,
-                        y,
-                        self.fun_single(t, y),
-                        self.atol,
-                        self.jac_factor,
-                        jac_sparsity,
-                    )
-
-                    return j
-
-                return estimate_wrapper
-
-        elif callable(jac):
-            # Check jacobian function accepts correct number of parameters
-            if len(inspect.signature(jac).parameters) != 2:
-                raise ValueError("Jacobian function must be of the form j(t, y).")
-
-            self.njev += 1
-            j = jac(self.t, self.y)
-
-            if j.shape != (self.n, self.n):
-                raise ValueError(
-                    "Jacobian should have shape {0} rather than {1}.".format(
-                        (self.n, self.n), j.shape
-                    )
-                )
-
-            # If jacobian is sparse...
-            if issparse(j):
-
-                def call_wrapper(t, y):
-                    self.njev += 1
-                    return csc_matrix(jac(t, y), dtype=self.y.dtype)
-
-                return call_wrapper
-
-            else:
-
-                def call_wrapper(t, y):
-                    self.njev += 1
-                    return np.asarray(jac(t, y), dtype=self.y.dtype)
-
-                return call_wrapper
-
-        # If Jacobian is constant
-        else:
-
-            # If matrix is sparse...
-            if issparse(jac):
-                jac = csc_matrix(jac, dtype=self.y.dtype)
-
-            else:
-                jac = np.asarray(jac, dtype=self.y.dtype)
-
-            if jac.shape != (self.n, self.n):
-                raise ValueError(
-                    "Jacobian should have shape {0} rather than {1}.".format(
-                        (self.n, self.n), jac.shape
-                    )
-                )
-
-            return lambda t, y: jac
+        vectorized, optional: True if fun is implemented as a vectorized function (defaults to False)."""
 
     def __init__(
         self,
@@ -133,92 +45,81 @@ class EXP4(OdeSolver):
         jac=None,
         jac_sparsity=None,
         vectorized=False,
-        autonomous=False,
         **extraneous
     ):
         # Raise warnings for extraneous arguments
         warn_extraneous(extraneous)
-
-        self.autonomous = autonomous
-
-        if autonomous:
-            fun = lambda t, y: fun(y)
 
         super().__init__(fun, t0, y0, t_bound, vectorized, support_complex=True)
 
         self.max_step = validate_max_step(max_step)
         self.rtol, self.atol = validate_tol(rtol, atol, self.n)
 
-        if jac is None:
-            # Method is only order 2 when jacobian is estimated
-            self.order = 2
-        else:
-            self.order = 4
-
         if first_step is None:
-            self.h_abs = select_initial_step(
-                self.fun,
-                self.t,
-                self.y,
-                self.fun(self.t, self.y),
-                self.direction,
-                self.order,
-                self.rtol,
-                self.atol,
+            raise ValueError("first_step must be specified.")
+
+        self.first_step = validate_first_step(first_step, self.t0, self.t_bound)
+
+        if self.first_step > self.max_step:
+            raise ValueError("first_step cannot exceed max_step.")
+
+        self.jac = self.handle_jac(jac, jac_sparsity)
+
+    def handle_jac(self, jac, sparsity):
+        """Wraps the num_jac function that estimates the Jacobian at each step."""
+
+        if jac is not None:
+            raise ValueError(
+                "This method does not currently support specifying an explicit Jacobian."
             )
 
-        else:
-            self.h_abs = validate_first_step(first_step, self.t, self.t_bound)
+        if sparsity is not None:
+            if issparse(sparsity):
+                sparsity = csc_matrix(sparsity)
 
-        self.h_abs = warn_max_step_exceeded(self.h_abs, max_step)
+            groups = group_columns(sparsity)
+            sparsity = (sparsity, groups)
 
-        self.jac = self._handle_jac(jac, jac_sparsity)
+        self.jac_factor = None
+
+        def jac_wrapper(t, y):
+            self.njev += 1
+            J, self.jac_factor = num_jac(
+                self.wrapped_fun_vectorized,
+                t,
+                y,
+                self.wrapped_fun_single(t, y),
+                self.atol,
+                self.jac_factor,
+                sparsity,
+            )
+            return J
+
+        return jac_wrapper
 
     @staticmethod
-    def _calc_step(fun, A, h, t0, y0, autonomous):
-        if autonomous:
-            f = lambda y: fun(None, y)
-
-        else:
-            # Wrap non-autonomous function, fun(t, y), to make it an autonomous function f(y) with a t' = 1 dependency (i.e. put t into the y array)
-            f = lambda y: np.array([*fun(y[-1], y[0:-1]), 1.0], dtype=y0.dtype)
-            y0 = np.array([*y0, t0], dtype=y0.dtype)
-
+    def _calc_step(fun, A, h, y0):
         # Reused values
         hA = h * A
         phi_1_3 = phi_step_jacob_hA(hA, (1.0 / 3.0))
         phi_2_3 = phi_step_jacob_hA(hA, (2.0 / 3.0))
         phi = phi_step_jacob_hA(hA, 1.0)
 
-        f_y0 = f(y0)
+        f_y0 = fun(y0)
 
-        if autonomous:
-            k_1 = np.matmul(phi_1_3, f_y0)
-            k_2 = np.matmul(phi_2_3, f_y0)
-            k_3 = np.matmul(phi, f_y0)
+        k_1 = np.matmul(phi_1_3, f_y0)
+        k_2 = np.matmul(phi_2_3, f_y0)
+        k_3 = np.matmul(phi, f_y0)
 
-        else:
-            # Apply Jacobian only to original function
-            k_1 = np.array([*np.matmul(phi_1_3, f_y0[0:-1]), f_y0[-1]], dtype=y0.dtype)
-            k_2 = np.array([*np.matmul(phi_2_3, f_y0[0:-1]), f_y0[-1]], dtype=y0.dtype)
-            k_3 = np.array([*np.matmul(phi, f_y0[0:-1]), f_y0[-1]], dtype=y0.dtype)
-
-        w_4 = ((-7.0 / 300.0) * k_1) + ((97.0 / 150.0) * k_2) - ((37.0 / 300.0) & k_3)
+        w_4 = ((-7.0 / 300.0) * k_1) + ((97.0 / 150.0) * k_2) - ((37.0 / 300.0) * k_3)
 
         u_4 = y0 + (h * w_4)
 
-        d_4 = f(u_4) - f_y0 - (hA * w_4)
+        d_4 = fun(u_4) - f_y0 - np.matmul(hA, w_4)
 
-        if autonomous:
-            k_4 = np.matmul(phi_1_3, d_4)
-            k_5 = np.matmul(phi_2_3, d_4)
-            k_6 = np.matmul(phi, d_4)
-
-        else:
-            # Apply Jacobian only to original function
-            k_4 = np.array([*np.matmul(phi_1_3, d_4[0:-1]), d_4[-1]], dtype=y0.dtype)
-            k_5 = np.array([*np.matmul(phi_2_3, d_4[0:-1]), d_4[-1]], dtype=y0.dtype)
-            k_6 = np.array([*np.matmul(phi, d_4[0:-1]), d_4[-1]], dtype=y0.dtype)
+        k_4 = np.matmul(phi_1_3, d_4)
+        k_5 = np.matmul(phi_2_3, d_4)
+        k_6 = np.matmul(phi, d_4)
 
         w_7 = (
             ((59.0 / 300.0) * k_1)
@@ -228,30 +129,60 @@ class EXP4(OdeSolver):
 
         u_7 = y0 + h * w_7
 
-        d_7 = f(u_7) - f_y0 - (hA * w_7)
+        d_7 = fun(u_7) - f_y0 - np.matmul(hA, w_7)
 
-        if autonomous:
-            k_7 = np.matmul(phi_1_3, d_7)
-
-        else:
-            k_7 = np.array([*np.matmul(phi_1_3, d_7[0:-1]), d_7[-1]], dtype=y0.dtype)
+        k_7 = np.matmul(phi_1_3, d_7)
 
         y1 = y0 + h * (k_3 + k_4 - ((4.0 / 3.0) * k_5) + k_6 + ((1.0 / 6.0) * k_7))
 
-        if autonomous:
-            return y1
+        return y1
 
-        else:
-            return y1[0:-1]
+    @staticmethod
+    def add_dependency(fun, t, y):
+        """Takes the return value of the specified function and adds an explicit t' = 1 dependency to it.
+
+        NB: Must use the non-vectorized version of the function, i.e. self.fun (if self.nfev is to be incremented) or self.fun_single (if not)."""
+
+        d = fun(t, y)
+        return np.array([*d, 1.0], dtype=d.dtype)
+
+    def wrapped_fun(self, t, y):
+        """Version of self.fun with explicit t' = 1 dependency."""
+
+        return self.add_dependency(self.fun, t, y)
+
+    def wrapped_fun_single(self, t, y):
+        """Version of self.fun_single with explicit t' = 1 dependency."""
+
+        return self.add_dependency(self.fun_single, t, y)
+
+    def wrapped_fun_vectorized(self, t, y):
+        """Version of self.fun_vectorized with explicit t' = 1 dependency."""
+        # NB: Vectorization algorithm copied from scipy.integrate._ivp.base.py (i.e same one base class uses)
+
+        d = np.empty_like(y)
+
+        for i, yi in enumerate(y.T):
+            d[:, i] = self.wrapped_fun_single(t, yi)
+
+        return d
 
     def _step_impl(self):
-        converged = False
+        # Shrink stepsize if it goes beyond edge of integration bounds
+        self.h_abs = np.min(self.first_step, np.abs(self.t_bound - self.t))
 
-        while not converged:
-            t_new = self.t + (self.direction * self.h_abs)
+        # Add the t dependency to y
+        y_wrapped = np.array([*self.y, self.t], dtype=self.y.dtype)
 
-            A = self.jac(self.t, self.y)
+        # Estimate the Jacobian matrix
+        A = self.jac(self.t, y_wrapped)
 
-            y_new = self._calc_step(
-                self.fun, A, self.h_abs, self.t, self.y, self.autonomous
-            )
+        t_new = self.t + (self.direction * self.h_abs)
+        y_wrapped_new = self._calc_step(self.wrapped_fun, A, self.h_abs, y_wrapped)
+
+        self.t = t_new
+
+        # Unwrap new y (i.e. cut t off end of array)
+        self.y = y_wrapped[0:-1]
+
+        return True, None
