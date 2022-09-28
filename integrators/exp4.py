@@ -57,7 +57,7 @@ class EXP4(OdeSolver):
         if first_step is None:
             raise ValueError("first_step must be specified.")
 
-        self.first_step = validate_first_step(first_step, self.t0, self.t_bound)
+        self.first_step = validate_first_step(first_step, t0, t_bound)
 
         if self.first_step > self.max_step:
             raise ValueError("first_step cannot exceed max_step.")
