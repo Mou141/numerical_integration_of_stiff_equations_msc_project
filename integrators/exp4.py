@@ -1,5 +1,4 @@
 """A SciPy compatible implementation of the exp4 exponential integrator described in https://epubs.siam.org/doi/10.1137/S1064827595295337."""
-from sre_constants import SUCCESS
 from scipy.sparse import csc_matrix, issparse
 from scipy.optimize._numdiff import group_columns
 from scipy.integrate import OdeSolver
@@ -13,7 +12,7 @@ from scipy.integrate._ivp.common import (
 
 import numpy as np
 
-from ._common import phi_step_jacob_hA, warn_max_step_exceeded
+from ._common import phi_step_jacob_hA
 
 
 class EXP4(OdeSolver):
