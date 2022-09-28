@@ -182,6 +182,6 @@ class EXP4(OdeSolver):
         self.t = t_new
 
         # Unwrap new y (i.e. cut t off end of array)
-        self.y = y_wrapped[0:-1]
+        self.y = y_wrapped_new[0:-1]
 
         return True, None
