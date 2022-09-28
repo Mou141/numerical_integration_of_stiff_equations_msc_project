@@ -4,11 +4,11 @@ by integrating a non-stiff differential system."""
 from pathlib import Path
 import sys
 
-# Add path of integrators folder to path (this contains the exp4.py file)
-INTEGRATOR_PATH = Path(__file__).resolve().parent.parent / "integrators"
-sys.path.append(str(INTEGRATOR_PATH))
+# Add path of parent folder to sys.path so that exp4 can be imported
+PARENT_PATH = Path(__file__).resolve().parent.parent
+sys.path.append(str(PARENT_PATH))
 
-import exp4
+from integrators import exp4
 
 import numpy as np
 from scipy.integrate import solve_ivp
