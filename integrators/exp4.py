@@ -168,7 +168,7 @@ class EXP4(OdeSolver):
 
     def _step_impl(self):
         # Shrink stepsize if it goes beyond edge of integration bounds
-        self.h_abs = np.min(self.first_step, np.abs(self.t_bound - self.t))
+        self.h_abs = min(self.first_step, np.abs(self.t_bound - self.t))
 
         # Add the t dependency to y
         y_wrapped = np.array([*self.y, self.t], dtype=self.y.dtype)
