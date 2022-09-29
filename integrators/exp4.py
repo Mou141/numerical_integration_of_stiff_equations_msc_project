@@ -66,7 +66,7 @@ class EXP4(OdeSolver):
 
         self.autonomous = autonomous
 
-        self.jac = self.handle_jac(jac, jac_sparsity)
+        self.jac = self.handle_jac(jac, jac_sparsity, autonomous)
 
     def handle_jac(self, jac, sparsity, autonomous):
         """Wraps the num_jac function that estimates the Jacobian at each step."""
