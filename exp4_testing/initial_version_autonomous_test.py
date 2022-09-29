@@ -18,4 +18,5 @@ if __name__ == "__main__":
         np.array([TEST_Y0]),
         autonomous_test_function,
         test_solution,
+        autonomous=True,
     )

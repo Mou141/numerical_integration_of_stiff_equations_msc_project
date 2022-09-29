@@ -20,7 +20,7 @@ class EXP4(OdeSolver):
     This is an exponential method of order 4 when an exact Jacobian is used, but only order 2 when the Jacobian is estimated.
 
     Parameters:
-        fun: Function to integrate.
+        fun: Function to integrate of form fun(t, y).
         t0: Initial time.
         y0: Initial value of function (i.e. y0 = fun(t0)).
         t_bound: Boundary value of t for integration. Integrator won't integrate beyond that point.
@@ -29,7 +29,8 @@ class EXP4(OdeSolver):
         rtol and atol, optional: Allowed relative and absolute tolerances. Default to 1e-3 and 1e-6 respectively (see scipy.integrate.solve_ivp for details).
         jac, optional: This method does not support specifying the Jacobian. Values other than None will raise a ValueError.
         jac_sparsity, optional: If None, the Jacobian matrix is not sparse. If a matrix is passsed defining the sparsity structure of the jacobian, this is used to speed up computation (i.e. most elements of matrix will be known to be 0).
-        vectorized, optional: True if fun is implemented as a vectorized function (defaults to False)."""
+        vectorized, optional: True if fun is implemented as a vectorized function (defaults to False).
+        autonomous, optional: True if fun(t, y) depends only on y (defaults to False). Setting to True if fun(t, y) is autonomous will increase accuracy."""
 
     def __init__(
         self,
@@ -44,6 +45,7 @@ class EXP4(OdeSolver):
         jac=None,
         jac_sparsity=None,
         vectorized=False,
+        autonomous=False,
         **extraneous
     ):
         # Raise warnings for extraneous arguments
@@ -62,9 +64,11 @@ class EXP4(OdeSolver):
         if self.first_step > self.max_step:
             raise ValueError("first_step cannot exceed max_step.")
 
+        self.autonomous = autonomous
+
         self.jac = self.handle_jac(jac, jac_sparsity)
 
-    def handle_jac(self, jac, sparsity):
+    def handle_jac(self, jac, sparsity, autonomous):
         """Wraps the num_jac function that estimates the Jacobian at each step."""
 
         if jac is not None:
@@ -81,10 +85,17 @@ class EXP4(OdeSolver):
 
         self.jac_factor = None
 
+        if autonomous:
+            vec_fun = self.fun_vectorized
+
+        else:
+            # Add t' = 1 dependency
+            vec_fun = self.wrapped_fun_vectorized
+
         def jac_wrapper(t, y):
             self.njev += 1
             J, self.jac_factor = num_jac(
-                self.wrapped_fun_vectorized,
+                vec_fun,
                 t,
                 y,
                 self.wrapped_fun_single(t, y),
@@ -173,18 +184,27 @@ class EXP4(OdeSolver):
         # Shrink stepsize if it goes beyond edge of integration bounds
         self.h_abs = min(self.first_step, np.abs(self.t_bound - self.t))
 
-        # Add the t dependency to y
-        y_wrapped = np.array([*self.y, self.t], dtype=self.y.dtype)
+        if self.autonomous:
+            y_step = self.y
+            fun = self.fun
+
+        else:
+            # Add t' = 1 dependency
+            y_step = np.array([*self.y, self.t], dtype=self.y.dtype)
+            fun = self.wrapped_fun
 
         # Estimate the Jacobian matrix
-        A = self.jac(self.t, y_wrapped)
+        A = self.jac(self.t, y_step)
 
         t_new = self.t + (self.direction * self.h_abs)
-        y_wrapped_new = self._calc_step(self.wrapped_fun, A, self.h_abs, y_wrapped)
+        y_new = self._calc_step(fun, A, self.h_abs, y_step)
 
         self.t = t_new
 
-        # Unwrap new y (i.e. cut t off end of array)
-        self.y = y_wrapped_new[0:-1]
+        if self.autonomous:
+            self.y = y_new
+
+        else:
+            self.y = y_new[0:-1]
 
         return True, None

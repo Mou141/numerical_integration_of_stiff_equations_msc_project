@@ -30,7 +30,7 @@ TEST_Y0 = 2.0
 TEST_T0 = 0.0
 
 
-def main(start_t, end_t, stepsize, y0, fun, sol):
+def main(start_t, end_t, stepsize, y0, fun, sol, autonomous=False):
     print("Parameters:")
     print("\tt_start: {0}".format(start_t))
     print("\tt_end: {0}".format(end_t))
@@ -39,7 +39,12 @@ def main(start_t, end_t, stepsize, y0, fun, sol):
 
     print("Performing integration...")
     results = solve_ivp(
-        fun, (start_t, end_t), y0, method=exp4.EXP4, first_step=stepsize
+        fun,
+        (start_t, end_t),
+        y0,
+        method=exp4.EXP4,
+        first_step=stepsize,
+        autonomous=autonomous,
     )
 
     if results.success:
