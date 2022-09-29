@@ -104,7 +104,7 @@ class EXP4(OdeSolver):
         phi_2_3 = phi_step_jacob_hA(hA, (2.0 / 3.0))
         phi = phi_step_jacob_hA(hA, 1.0)
 
-        f_y0 = fun(y0)
+        f_y0 = fun(None, y0)
 
         k_1 = np.matmul(phi_1_3, f_y0)
         k_2 = np.matmul(phi_2_3, f_y0)
@@ -114,7 +114,7 @@ class EXP4(OdeSolver):
 
         u_4 = y0 + (h * w_4)
 
-        d_4 = fun(u_4) - f_y0 - np.matmul(hA, w_4)
+        d_4 = fun(None, u_4) - f_y0 - np.matmul(hA, w_4)
 
         k_4 = np.matmul(phi_1_3, d_4)
         k_5 = np.matmul(phi_2_3, d_4)
@@ -142,8 +142,9 @@ class EXP4(OdeSolver):
 
         NB: Must use the non-vectorized version of the function, i.e. self.fun (if self.nfev is to be incremented) or self.fun_single (if not)."""
 
-        # Execute the function and make sure the result is an array of at least 1D
-        d = np.array(fun(t, y), ndmin=1, copy=False)
+        # Extract y and t from the wrapped y array, execute the function,
+        # and make sure the result is an array of at least 1D
+        d = np.array(fun(y[-1], y[0:-1]), ndmin=1, copy=False)
 
         return np.array([*d, 1.0], dtype=d.dtype)
 
