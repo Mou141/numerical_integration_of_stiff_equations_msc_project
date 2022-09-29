@@ -87,10 +87,12 @@ class EXP4(OdeSolver):
 
         if autonomous:
             vec_fun = self.fun_vectorized
+            single_fun = self.fun_single
 
         else:
             # Add t' = 1 dependency
             vec_fun = self.wrapped_fun_vectorized
+            single_fun = self.wrapped_fun_single
 
         def jac_wrapper(t, y):
             self.njev += 1
@@ -98,7 +100,7 @@ class EXP4(OdeSolver):
                 vec_fun,
                 t,
                 y,
-                self.wrapped_fun_single(t, y),
+                single_fun,
                 self.atol,
                 self.jac_factor,
                 sparsity,
