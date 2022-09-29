@@ -128,7 +128,7 @@ class EXP4(OdeSolver):
 
         u_7 = y0 + h * w_7
 
-        d_7 = fun(u_7) - f_y0 - np.matmul(hA, w_7)
+        d_7 = fun(None, u_7) - f_y0 - np.matmul(hA, w_7)
 
         k_7 = np.matmul(phi_1_3, d_7)
 
