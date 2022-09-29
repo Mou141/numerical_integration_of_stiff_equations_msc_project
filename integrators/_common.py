@@ -5,7 +5,7 @@
 
 import numpy as np
 from scipy.linalg import expm
-from numpy.linalg import inv
+from numpy.linalg import pinv
 
 
 def phi(z):
@@ -18,7 +18,7 @@ def phi(z):
         return (expm(z) - 1.0) / z
 
     else:
-        return np.matmul((expm(z) - 1.0), inv(z))
+        return np.matmul((expm(z) - 1.0), pinv(z))
 
 
 def phi_step_jacob(h, A, j=1.0):
