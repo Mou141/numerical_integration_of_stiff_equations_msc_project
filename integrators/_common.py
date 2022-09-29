@@ -4,8 +4,7 @@
 # These functions are implemented here so that future integrator implementations can leverage them more easily
 
 import numpy as np
-from scipy.linalg import expm
-from numpy.linalg import pinv
+from scipy.linalg import expm, pinv
 
 
 def phi(z):
