@@ -56,7 +56,7 @@ def main(start_t, end_t, stepsize, y0, fun, sol):
     t_exact = np.linspace(start_t, end_t, 10000)
     y_exact = sol(t_exact)
 
-    plt.plot(results.t, results.y, label="Numerical Solution")
+    plt.plot(results.t, results.y[0], label="Numerical Solution")
     plt.plot(t_exact, y_exact, label="Analytical Solution")
     plt.legend(loc="best")
 
