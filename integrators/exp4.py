@@ -199,7 +199,7 @@ class EXP4(OdeSolver):
         A = self.jac(self.t, y_step)
 
         t_new = self.t + (self.direction * self.h_abs)
-        y_new = self._calc_step(fun, A, self.h_abs, y_step)
+        y_new = self._calc_step(fun, A, (self.direction * self.h_abs), y_step)
 
         self.t = t_new
 
