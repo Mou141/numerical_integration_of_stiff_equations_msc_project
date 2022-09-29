@@ -26,7 +26,7 @@ def test_solution(t):
 
 
 # Initial value of above differential system
-TEST_Y0 = 2.0
+TEST_Y0 = 1.0
 TEST_T0 = 0.0
 
 
