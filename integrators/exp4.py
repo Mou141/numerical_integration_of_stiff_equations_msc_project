@@ -142,7 +142,9 @@ class EXP4(OdeSolver):
 
         NB: Must use the non-vectorized version of the function, i.e. self.fun (if self.nfev is to be incremented) or self.fun_single (if not)."""
 
-        d = fun(t, y)
+        # Execute the function and make sure the result is an array of at least 1D
+        d = np.array(fun(t, y), ndim=1, copy=False)
+
         return np.array([*d, 1.0], dtype=d.dtype)
 
     def wrapped_fun(self, t, y):
