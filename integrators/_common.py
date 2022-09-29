@@ -11,7 +11,14 @@ from numpy.linalg import inv
 def phi(z):
     """Returns: phi(z) = (e^z - 1)/z"""
 
-    return np.matmul((expm(z) - 1.0), inv(z))
+    z = np.asarray(z)
+
+    if z.shape == (1, 1):
+        # special case where matrix is 1 x 1 (and therefore cannot be inverted)
+        return (expm(z) - 1.0) / z
+
+    else:
+        return np.matmul((expm(z) - 1.0), inv(z))
 
 
 def phi_step_jacob(h, A, j=1.0):
