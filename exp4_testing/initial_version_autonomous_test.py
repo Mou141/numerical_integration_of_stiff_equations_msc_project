@@ -2,6 +2,7 @@
 but the differential equation has an autonomous formulation (it depends only on y)."""
 
 from initial_version_test import test_solution, TEST_T0, TEST_Y0, main
+import numpy as np
 
 
 def autonomous_test_function(t, y):
@@ -10,4 +11,11 @@ def autonomous_test_function(t, y):
 
 
 if __name__ == "__main__":
-    main(TEST_T0, 10.0, 0.01, TEST_Y0, autonomous_test_function, test_solution)
+    main(
+        TEST_T0,
+        10.0,
+        0.01,
+        np.array([TEST_Y0]),
+        autonomous_test_function,
+        test_solution,
+    )
