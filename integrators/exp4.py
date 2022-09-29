@@ -100,7 +100,7 @@ class EXP4(OdeSolver):
                 vec_fun,
                 t,
                 y,
-                single_fun,
+                single_fun(t, y),
                 self.atol,
                 self.jac_factor,
                 sparsity,
