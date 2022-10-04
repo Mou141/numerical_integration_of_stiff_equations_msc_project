@@ -269,7 +269,6 @@ class EXP4(OdeSolver):
 
             if err < 1.0:
                 # All errors in y are below tolerance
-                converged = True
                 self.t = self.t + (self.direction * self.h_abs)
 
                 if self.autonomous:
