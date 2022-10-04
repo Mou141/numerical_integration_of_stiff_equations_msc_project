@@ -30,7 +30,7 @@ class EXP4(OdeSolver):
         jac, optional: This method does not support specifying the Jacobian. Values other than None will raise a ValueError.
         jac_sparsity, optional: If None, the Jacobian matrix is not sparse. If a matrix is passsed defining the sparsity structure of the jacobian, this is used to speed up computation (i.e. most elements of matrix will be known to be 0).
         vectorized, optional: True if fun is implemented as a vectorized function (defaults to False).
-        autonomous, optional: True if fun(t, y) depends only on y (defaults to False). Setting to True if fun(t, y) is autonomous will increase accuracy."""
+        autonomous, optional: True if fun(t, y) depends only on y (defaults to False). Setting to True if fun(t, y) is autonomous will increase execution speed but not accuracy."""
 
     def __init__(
         self,
