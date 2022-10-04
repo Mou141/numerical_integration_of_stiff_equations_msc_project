@@ -6,6 +6,7 @@ from scipy.integrate._ivp.common import (
     warn_extraneous,
     validate_max_step,
     validate_first_step,
+    select_initial_step,
     validate_tol,
     num_jac,
 )
@@ -13,6 +14,7 @@ from scipy.integrate._ivp.common import (
 import numpy as np
 
 from ._common import phi_step_jacob_hA
+from ._stepsize import calc_min_step, error_norm, calc_factor
 
 
 class EXP4(OdeSolver):
@@ -30,7 +32,15 @@ class EXP4(OdeSolver):
         jac, optional: This method does not support specifying the Jacobian. Values other than None will raise a ValueError.
         jac_sparsity, optional: If None, the Jacobian matrix is not sparse. If a matrix is passsed defining the sparsity structure of the jacobian, this is used to speed up computation (i.e. most elements of matrix will be known to be 0).
         vectorized, optional: True if fun is implemented as a vectorized function (defaults to False).
-        autonomous, optional: True if fun(t, y) depends only on y (defaults to False). Setting to True if fun(t, y) is autonomous will increase execution speed but not accuracy."""
+        autonomous, optional: True if fun(t, y) depends only on y (defaults to False). Setting to True if fun(t, y) is autonomous will increase execution speed but not accuracy.
+        max_factor, optional: Maximum amount by which stepsize may increase after a successful step (defaults to 10.0).
+        min_factor, optional: Minimum amount stepsize can shrink by after an unsuccessful step (defaults to 0.2).
+        safety, optional: Scaling factor for calculating new stepsizes. Factor to shrink calculated stepsizes to increase convergence rate. Should be < 1 (defaults to 0.9)."""
+
+    # Order of the embedded method used to estimate the error
+    error_estimation_order = 2
+    # Exponent used to calculate factor for new stepsize
+    error_estimation_exponent = -1.0 / error_estimation_order
 
     def __init__(
         self,
@@ -46,6 +56,9 @@ class EXP4(OdeSolver):
         jac_sparsity=None,
         vectorized=False,
         autonomous=False,
+        max_factor=10.0,
+        min_factor=0.2,
+        safety=0.9,
         **extraneous
     ):
         # Raise warnings for extraneous arguments
@@ -56,15 +69,41 @@ class EXP4(OdeSolver):
         self.max_step = validate_max_step(max_step)
         self.rtol, self.atol = validate_tol(rtol, atol, self.n)
 
-        if first_step is None:
-            raise ValueError("first_step must be specified.")
+        self.autonomous = autonomous
 
-        self.first_step = validate_first_step(first_step, t0, t_bound)
+        if max_factor <= 1.0:
+            raise ValueError("max_factor must be greater than 1.")
+
+        if min_factor <= 0.0:
+            raise ValueError("min_factor must be greater than 0.0.")
+
+        if safety > 1.0 or safety <= 0.0:
+            raise ValueError(
+                "safety must be greater than 0 and less than or equal to 1."
+            )
+
+        self.max_factor = max_factor
+        self.min_factor = min_factor
+        self.safety = safety
+
+        if first_step is None:
+            # Need to select stepsize
+            self.first_step = select_initial_step(
+                fun, t0, y0, fun(t0, y0), self.direction, self.error_estimation_order
+            )
+
+        else:
+            self.first_step = validate_first_step(first_step, t0, t_bound)
 
         if self.first_step > self.max_step:
-            raise ValueError("first_step cannot exceed max_step.")
+            raise ValueError(
+                "First step {0} exceeds maximum step {1}.".format(
+                    self.first_step, self.max_step
+                )
+            )
 
-        self.autonomous = autonomous
+        if self.first_step < calc_min_step(t0, t_bound, self.direction):
+            raise ValueError("First step is too small.")
 
         self.jac = self.handle_jac(jac, jac_sparsity, autonomous)
 
@@ -110,7 +149,13 @@ class EXP4(OdeSolver):
         return jac_wrapper
 
     @staticmethod
-    def _calc_step(fun, A, h, y0):
+    def _embedded_error_step(y0, h, k_1, k_2, k_4, k_7):
+        """Performs a step of the embedded method used for error calculation."""
+        return y0 + h * (-k_1 + (2.0 * k_2) - k_4 + k_7)
+
+    @classmethod
+    def _calc_step(cls, fun, A, h, y0):
+        """Performs a step of the exp4 method and the embedded error calculation method."""
         # Reused values
         hA = h * A
         phi_1_3 = phi_step_jacob_hA(hA, (1.0 / 3.0))
@@ -147,7 +192,10 @@ class EXP4(OdeSolver):
 
         y1 = y0 + h * (k_3 + k_4 - ((4.0 / 3.0) * k_5) + k_6 + ((1.0 / 6.0) * k_7))
 
-        return y1
+        # Perform embedded error step
+        y_err = cls._embedded_error_step(y0, h, k_1, k_2, k_4, k_7)
+
+        return y1, y_err
 
     @staticmethod
     def add_dependency(fun, t, y):
@@ -183,30 +231,51 @@ class EXP4(OdeSolver):
         return d
 
     def _step_impl(self):
-        # Shrink stepsize if it goes beyond edge of integration bounds
-        self.h_abs = min(self.first_step, np.abs(self.t_bound - self.t))
-
         if self.autonomous:
-            y_step = self.y
             fun = self.fun
+            y0 = self.y
 
         else:
-            # Add t' = 1 dependency
-            y_step = np.array([*self.y, self.t], dtype=self.y.dtype)
+            # Wrap function and y to add t dependency
             fun = self.wrapped_fun
+            y0 = np.array([*self.y, self.t], dtype=self.y.dtype)
 
-        # Estimate the Jacobian matrix
-        A = self.jac(self.t, y_step)
+        # Estimate Jacobian matrix
+        A = self.jac(self.t, y0)
 
-        t_new = self.t + (self.direction * self.h_abs)
-        y_new = self._calc_step(fun, A, self.h_abs, y_step)
+        while True:
+            # Perform exp4 step and error step
+            y_new, y_err = self._calc_step(fun, A, self.h_abs, y0)
 
-        self.t = t_new
+            if self.autonomous:
+                err = error_norm(y_new, y_err, self.atol, self.rtol)
+            else:
+                err = error_norm(y_new[0:-1], y_err[0:-1], self.atol, self.rtol)
 
-        if self.autonomous:
-            self.y = y_new
+            # Calculate new stepsize (smaller for next attempt at this step if not converged, otherwise larger for next step)
+            self.h_abs = self.h_abs * calc_factor(
+                err,
+                self.error_estimation_exponent,
+                self.max_factor,
+                self.min_factor,
+                self.safety,
+            )
 
-        else:
-            self.y = y_new[0:-1]
+            # If next step will take us over edge of integration range, reduce stepsize
+            self.h_abs = min(self.h_abs, np.abs(self.t_bound - self.t))
 
-        return True, None
+            if self.h_abs < calc_min_step(self.t, self.t_bound, self.direction):
+                return False, self.TOO_SMALL_STEP
+
+            if err < 1.0:
+                # All errors in y are below tolerance
+                converged = True
+                self.t = self.t + (self.direction * self.h_abs)
+
+                if self.autonomous:
+                    self.y = y_new
+                else:
+                    self.y = y_new[0:-1]
+
+                # Method has converged
+                return True, None
