@@ -261,15 +261,14 @@ class EXP4(OdeSolver):
                 self.safety,
             )
 
-            # If next step will take us over edge of integration range, reduce stepsize
-            self.h_abs = min(self.h_abs, np.abs(self.t_bound - self.t))
-
             if self.h_abs < calc_min_step(self.t, self.t_bound, self.direction):
                 return False, self.TOO_SMALL_STEP
 
             if err < 1.0:
                 # All errors in y are below tolerance
                 self.t = self.t + (self.direction * self.h_abs)
+                # If next step will take us over edge of integration range, reduce stepsize
+                self.h_abs = min(self.h_abs, np.abs(self.t_bound - self.t))
 
                 if self.autonomous:
                     self.y = y_new
@@ -278,3 +277,7 @@ class EXP4(OdeSolver):
 
                 # Method has converged
                 return True, None
+
+            else:
+                # If next step will take us over edge of integration range, reduce stepsize
+                self.h_abs = min(self.h_abs, np.abs(self.t_bound - self.t))
