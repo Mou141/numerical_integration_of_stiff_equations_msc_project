@@ -24,8 +24,8 @@ def calc_min_step(t, t_bound, direction, factor=10.0):
 
 
 def local_tolerance_scale(y_new, y_err, atol, rtol):
-    """Calculates the (maximum) tolerance for each component of y (for normalising the local error)."""
-    return (np.maximum(np.abs(y_new), np.abs(y_err)) * rtol) + atol
+    """Calculates the (minimum) tolerance for each component of y (for normalising the local error)."""
+    return (np.minimum(np.abs(y_new), np.abs(y_err)) * rtol) + atol
 
 
 def local_error(y_new, y_err):
