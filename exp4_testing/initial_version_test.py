@@ -69,4 +69,4 @@ def main(start_t, end_t, stepsize, y0, fun, sol, autonomous=False):
 
 
 if __name__ == "__main__":
-    main(TEST_T0, 10.0, 0.01, np.array([TEST_Y0]), test_function, test_solution)
+    main(TEST_T0, 10.0, None, np.array([TEST_Y0]), test_function, test_solution)
