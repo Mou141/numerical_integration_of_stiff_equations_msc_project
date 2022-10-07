@@ -89,7 +89,14 @@ class EXP4(OdeSolver):
         if first_step is None:
             # Need to select stepsize
             self.first_step = select_initial_step(
-                fun, t0, y0, fun(t0, y0), self.direction, self.error_estimation_order
+                fun,
+                t0,
+                y0,
+                fun(t0, y0),
+                self.direction,
+                self.error_estimation_order,
+                self.rtol,
+                self.atol,
             )
 
         else:
