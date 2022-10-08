@@ -57,7 +57,7 @@ class EXP4(OdeSolver):
         vectorized=False,
         autonomous=False,
         max_factor=5.0,
-        min_factor=0.5,
+        min_factor=0.2,
         safety=0.9,
         **extraneous
     ):
