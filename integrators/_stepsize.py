@@ -46,7 +46,7 @@ def calc_factor(error_norm, error_exponent, max_factor, min_factor, safety):
     Returned value will be at least min_factor and at most max_factor."""
     factor = safety * (error_norm**error_exponent)
 
-    if error_norm < 1:
+    if error_norm < 1.0:
         return min(max_factor, factor)
 
     return max(min_factor, factor)
