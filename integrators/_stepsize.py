@@ -41,12 +41,24 @@ def error_norm(y_new, y_err, atol, rtol):
     )
 
 
-def calc_factor(error_norm, error_exponent, max_factor, min_factor, safety):
-    """Returns the factor for calculating the new stepsize: safety * (error_norm ** error_exponent).
-    Returned value will be at least min_factor and at most max_factor."""
-    factor = safety * (error_norm**error_exponent)
+def stepsize_check(h, t, t_bound, direction):
+    """If current stepsize would take integrator beyond end of bounds,
+    shrink it so that it will reach end of bounds."""
+    # Calculate step that would take us to end of solution
+    abs_bound = np.abs(t_bound - t)
 
-    if error_norm < 1.0:
+    if np.abs(h) > abs_bound:
+        return direction * abs_bound
+    else:
+        return h
+
+
+def calc_factor(err, error_exponent, max_factor, min_factor, safety):
+    """Returns the factor for calculating the new stepsize: safety * (err ** error_exponent).
+    Returned value will be at least min_factor and at most max_factor."""
+    factor = safety * (err**error_exponent)
+
+    if err < 1.0:
         return min(max_factor, factor)
 
     return max(min_factor, factor)

@@ -14,7 +14,7 @@ from scipy.integrate._ivp.common import (
 import numpy as np
 
 from ._common import phi_step_jacob_hA
-from ._stepsize import calc_min_step, error_norm, calc_factor
+from ._stepsize import calc_min_step, error_norm, calc_factor, stepsize_check
 
 
 class EXP4(OdeSolver):
@@ -38,9 +38,9 @@ class EXP4(OdeSolver):
         safety, optional: Scaling factor for calculating new stepsizes. Factor to shrink calculated stepsizes to increase convergence rate. Should be < 1 (defaults to 0.9)."""
 
     # Order of the embedded method used to estimate the error
-    error_estimation_order = 1
+    error_estimation_order = 1.0
     # Exponent used to calculate factor for new stepsize
-    error_estimation_exponent = -1.0 / (float(error_estimation_order) + 1.0)
+    error_estimation_exponent = -1.0 / (error_estimation_order + 1.0)
 
     def __init__(
         self,
@@ -242,27 +242,29 @@ class EXP4(OdeSolver):
     def _step_impl(self):
         if self.autonomous:
             fun = self.fun
-            y0 = self.y
+            y_old = self.y
 
         else:
             # Wrap function and y to add t dependency
             fun = self.wrapped_fun
-            y0 = np.array([*self.y, self.t], dtype=self.y.dtype)
+            y_old = np.array([*self.y, self.t], dtype=self.y.dtype)
 
-        # Estimate Jacobian matrix
-        A = self.jac(self.t, y0)
+        # Estimate Jacobian matrix at current values of t and y
+        A = self.jac(self.t, y_old)
 
         while True:
-            # Perform exp4 step and error step
-            y_new, y_err = self._calc_step(fun, A, self.h, y0)
+            # Make sure stepsize won't take integrator beyond end of bounds
+            self.h = stepsize_check(self.h, self.t, self.t_bound, self.direction)
 
-            if self.autonomous:
-                err = error_norm(y_new, y_err, self.atol, self.rtol)
-            else:
-                err = error_norm(y_new[0:-1], y_err[0:-1], self.atol, self.rtol)
+            # Perform one step of exp4 and one step of embedded error method
+            y_new, y_err = self._calc_step(fun, A, self.h, y_old)
 
-            # Calculate new stepsize (smaller for next attempt at this step if not converged, otherwise larger for next step)
-            self.h = self.h * calc_factor(
+            # If all values of y_new are within tolerance, err < 1
+            # If any values are above tolerance, err > 1
+            err = error_norm(y_new, y_err, self.atol, self.rtol)
+
+            # Factor to alter steppsize by (shrink if step not accurate, grow otherwise)
+            factor = calc_factor(
                 err,
                 self.error_estimation_exponent,
                 self.max_factor,
@@ -270,27 +272,8 @@ class EXP4(OdeSolver):
                 self.safety,
             )
 
-            if np.abs(self.h) < calc_min_step(self.t, self.t_bound, self.direction):
-                return False, self.TOO_SMALL_STEP
+            self.h = factor * self.h
 
+            # All errors are within tolerance, solution has converged at this step
             if err < 1.0:
-                # All errors in y are below tolerance
-                self.t = self.t + self.h
-                # If next step will take us over edge of integration range, reduce stepsize
-                self.h = self.direction * min(
-                    np.abs(self.h), np.abs(self.t_bound - self.t)
-                )
-
-                if self.autonomous:
-                    self.y = y_new
-                else:
-                    self.y = y_new[0:-1]
-
-                # Method has converged
                 return True, None
-
-            else:
-                # If next step will take us over edge of integration range, reduce stepsize
-                self.h = self.direction * min(
-                    np.abs(self.h), np.abs(self.t_bound - self.t)
-                )
