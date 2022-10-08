@@ -256,12 +256,17 @@ class EXP4(OdeSolver):
             # Make sure stepsize won't take integrator beyond end of bounds
             self.h = stepsize_check(self.h, self.t, self.t_bound, self.direction)
 
+            t_new = self.t + self.h
+
             # Perform one step of exp4 and one step of embedded error method
             y_new, y_err = self._calc_step(fun, A, self.h, y_old)
 
             # If all values of y_new are within tolerance, err < 1
             # If any values are above tolerance, err > 1
-            err = error_norm(y_new, y_err, self.atol, self.rtol)
+            if self.autonomous:
+                err = error_norm(y_new, y_err, self.atol, self.rtol)
+            else:
+                err = error_norm(y_new[0:-1], y_err[0:-1], self.atol, self.rtol)
 
             # Factor to alter steppsize by (shrink if step not accurate, grow otherwise)
             factor = calc_factor(
@@ -276,4 +281,11 @@ class EXP4(OdeSolver):
 
             # All errors are within tolerance, solution has converged at this step
             if err < 1.0:
+                self.t = t_new
+
+                if self.autonomous:
+                    self.y = y_new
+                else:
+                    self.y = y_new[0:-1]
+
                 return True, None
