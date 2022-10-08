@@ -77,5 +77,4 @@ if __name__ == "__main__":
         np.array([TEST_Y0]),
         test_function,
         test_solution,
-        atol=1e-4,
     )
