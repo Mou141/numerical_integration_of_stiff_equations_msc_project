@@ -40,7 +40,7 @@ class EXP4(OdeSolver):
     # Order of the embedded method used to estimate the error
     error_estimation_order = 2
     # Exponent used to calculate factor for new stepsize
-    error_estimation_exponent = -1.0 / error_estimation_order
+    error_estimation_exponent = -1.0 / float(error_estimation_order)
 
     def __init__(
         self,
