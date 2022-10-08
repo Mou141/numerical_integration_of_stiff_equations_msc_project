@@ -30,7 +30,7 @@ TEST_Y0 = 1.0
 TEST_T0 = 0.0
 
 
-def main(start_t, end_t, stepsize, y0, fun, sol, autonomous=False):
+def main(start_t, end_t, stepsize, y0, fun, sol, autonomous=False, atol=1e-6):
     print("Parameters:")
     print("\tt_start: {0}".format(start_t))
     print("\tt_end: {0}".format(end_t))
@@ -45,6 +45,7 @@ def main(start_t, end_t, stepsize, y0, fun, sol, autonomous=False):
         method=exp4.EXP4,
         first_step=stepsize,
         autonomous=autonomous,
+        atol=atol,
     )
 
     if results.success:
@@ -69,4 +70,12 @@ def main(start_t, end_t, stepsize, y0, fun, sol, autonomous=False):
 
 
 if __name__ == "__main__":
-    main(TEST_T0, 10.0, None, np.array([TEST_Y0]), test_function, test_solution)
+    main(
+        TEST_T0,
+        10.0,
+        None,
+        np.array([TEST_Y0]),
+        test_function,
+        test_solution,
+        atol=1e-4,
+    )
