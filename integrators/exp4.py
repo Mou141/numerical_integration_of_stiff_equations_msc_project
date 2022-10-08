@@ -264,9 +264,11 @@ class EXP4(OdeSolver):
             # If all values of y_new are within tolerance, err < 1
             # If any values are above tolerance, err > 1
             if self.autonomous:
-                err = error_norm(y_new, y_err, self.atol, self.rtol)
+                err = error_norm(y_new, y_err, y_old, self.atol, self.rtol)
             else:
-                err = error_norm(y_new[0:-1], y_err[0:-1], self.atol, self.rtol)
+                err = error_norm(
+                    y_new[0:-1], y_err[0:-1], y_old[0:-1], self.atol, self.rtol
+                )
 
             # Factor to alter steppsize by (shrink if step not accurate, grow otherwise)
             factor = calc_factor(
