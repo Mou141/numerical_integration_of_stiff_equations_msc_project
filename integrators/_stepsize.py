@@ -58,6 +58,10 @@ def stepsize_check(h, t, t_bound, direction):
 def calc_factor(err, error_exponent, max_factor, min_factor, safety):
     """Returns the factor for calculating the new stepsize: safety * (err ** error_exponent).
     Returned value will be at least min_factor and at most max_factor."""
+
+    if err == 0.0:
+        return max_factor
+
     factor = safety * (err**error_exponent)
 
     if err < 1.0:
