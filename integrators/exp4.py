@@ -38,7 +38,7 @@ class EXP4(OdeSolver):
         safety, optional: Scaling factor for calculating new stepsizes. Factor to shrink calculated stepsizes to increase convergence rate. Should be < 1 (defaults to 0.9)."""
 
     # Order of the embedded method used to estimate the error
-    error_estimation_order = 2
+    error_estimation_order = 1
     # Exponent used to calculate factor for new stepsize
     error_estimation_exponent = -1.0 / float(error_estimation_order)
 
@@ -156,9 +156,11 @@ class EXP4(OdeSolver):
         return jac_wrapper
 
     @staticmethod
-    def _embedded_error_step(y0, h, k_1, k_2, k_4, k_7):
+    def _embedded_error_step(y0, h, k_3, k_4, k_5, k_6, k_7):
         """Performs a step of the embedded method used for error calculation."""
-        return y0 + h * (-k_1 + (2.0 * k_2) - k_4 + k_7)
+        return y0 + h * (
+            k_3 + (-0.5 * k_4) + ((-2.0 / 3.0) + k_5) + (0.5 * k_6) + (0.5 * k_7)
+        )
 
     @classmethod
     def _calc_step(cls, fun, A, h, y0):
@@ -200,7 +202,7 @@ class EXP4(OdeSolver):
         y1 = y0 + h * (k_3 + k_4 - ((4.0 / 3.0) * k_5) + k_6 + ((1.0 / 6.0) * k_7))
 
         # Perform embedded error step
-        y_err = cls._embedded_error_step(y0, h, k_1, k_2, k_4, k_7)
+        y_err = cls._embedded_error_step(y0, h, k_3, k_4, k_5, k_6, k_7)
 
         return y1, y_err
 
