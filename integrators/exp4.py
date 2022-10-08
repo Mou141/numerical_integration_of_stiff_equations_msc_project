@@ -102,14 +102,14 @@ class EXP4(OdeSolver):
         else:
             self.h = self.direction * validate_first_step(first_step, t0, t_bound)
 
-        if self.first_step > self.max_step:
+        if np.abs(self.h) > self.max_step:
             raise ValueError(
                 "First step {0} exceeds maximum step {1}.".format(
-                    self.first_step, self.max_step
+                    first_step, self.max_step
                 )
             )
 
-        if self.first_step < calc_min_step(t0, t_bound, self.direction):
+        if np.abs(self.h) < calc_min_step(t0, t_bound, self.direction):
             raise ValueError("First step is too small.")
 
         self.jac = self.handle_jac(jac, jac_sparsity, autonomous)
