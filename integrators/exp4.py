@@ -88,7 +88,7 @@ class EXP4(OdeSolver):
 
         if first_step is None:
             # Need to select stepsize
-            self.first_step = select_initial_step(
+            self.h = self.direction * select_initial_step(
                 fun,
                 t0,
                 y0,
@@ -100,7 +100,7 @@ class EXP4(OdeSolver):
             )
 
         else:
-            self.first_step = validate_first_step(first_step, t0, t_bound)
+            self.h = self.direction * validate_first_step(first_step, t0, t_bound)
 
         if self.first_step > self.max_step:
             raise ValueError(
@@ -252,7 +252,7 @@ class EXP4(OdeSolver):
 
         while True:
             # Perform exp4 step and error step
-            y_new, y_err = self._calc_step(fun, A, self.h_abs, y0)
+            y_new, y_err = self._calc_step(fun, A, self.h, y0)
 
             if self.autonomous:
                 err = error_norm(y_new, y_err, self.atol, self.rtol)
@@ -260,7 +260,7 @@ class EXP4(OdeSolver):
                 err = error_norm(y_new[0:-1], y_err[0:-1], self.atol, self.rtol)
 
             # Calculate new stepsize (smaller for next attempt at this step if not converged, otherwise larger for next step)
-            self.h_abs = self.h_abs * calc_factor(
+            self.h = self.h * calc_factor(
                 err,
                 self.error_estimation_exponent,
                 self.max_factor,
@@ -268,14 +268,16 @@ class EXP4(OdeSolver):
                 self.safety,
             )
 
-            if self.h_abs < calc_min_step(self.t, self.t_bound, self.direction):
+            if np.abs(self.h) < calc_min_step(self.t, self.t_bound, self.direction):
                 return False, self.TOO_SMALL_STEP
 
             if err < 1.0:
                 # All errors in y are below tolerance
-                self.t = self.t + (self.direction * self.h_abs)
+                self.t = self.t + self.h
                 # If next step will take us over edge of integration range, reduce stepsize
-                self.h_abs = min(self.h_abs, np.abs(self.t_bound - self.t))
+                self.h = self.direction * min(
+                    np.abs(self.h), np.abs(self.t_bound - self.t)
+                )
 
                 if self.autonomous:
                     self.y = y_new
@@ -287,4 +289,6 @@ class EXP4(OdeSolver):
 
             else:
                 # If next step will take us over edge of integration range, reduce stepsize
-                self.h_abs = min(self.h_abs, np.abs(self.t_bound - self.t))
+                self.h = self.direction * min(
+                    np.abs(self.h), np.abs(self.t_bound - self.t)
+                )
