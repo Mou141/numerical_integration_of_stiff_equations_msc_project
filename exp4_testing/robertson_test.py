@@ -26,6 +26,9 @@ from robertson_integration import get_constraint, save_data
 
 from calc_error import linear_error
 
+HAIRER_Y0 = np.array([1.0, 0.0, 0.0])
+HOCHBRUCH_T_SPAN = (0.0, 400)
+
 
 def integate_robertson(
     y0=TEST_IVP.y0,
@@ -75,7 +78,7 @@ def integate_robertson(
 
 
 def main():
-    t, y = integate_robertson()
+    t, y = integate_robertson(y0=HAIRER_Y0, t_bounds=HOCHBRUCH_T_SPAN)
 
     constraint = get_constraint(y)
     lin_err = linear_error(constraint, 1.0)
