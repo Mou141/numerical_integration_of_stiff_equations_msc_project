@@ -283,7 +283,7 @@ class EXP4(OdeSolver):
             )
 
             self.h_old = self.h
-            self.err_old = self.err
+            self.err_old = err
 
             self.h = factor * self.h
 
