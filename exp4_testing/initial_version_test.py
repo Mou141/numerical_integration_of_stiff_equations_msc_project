@@ -73,7 +73,7 @@ if __name__ == "__main__":
     main(
         TEST_T0,
         10.0,
-        None,
+        0.1,
         np.array([TEST_Y0]),
         test_function,
         test_solution,
