@@ -247,6 +247,9 @@ class EXP4(OdeSolver):
         return d
 
     def _step_impl(self):
+        # Counts number of iterations to convergence
+        n = 0
+
         if self.autonomous:
             fun = self.fun
             y_old = self.y
@@ -260,6 +263,8 @@ class EXP4(OdeSolver):
         A = self.jac(self.t, y_old)
 
         while True:
+            n += 1
+
             # Make sure stepsize won't take integrator beyond end of bounds
             self.h = stepsize_check(self.h, self.t, self.t_bound, self.direction)
 
@@ -282,21 +287,26 @@ class EXP4(OdeSolver):
                     self.rtol,
                 )
 
-            # Factor to alter steppsize by (shrink if step not accurate, grow otherwise)
-            factor = calc_factor(
-                self.h,
-                self.h_old,
-                err,
-                self.err_old,
-                self.min_factor,
-                self.max_factor,
-                self.safety,
-            )
-
             self.h_old = self.h
             self.err_old = err
 
-            self.h = factor * self.h
+            # Every 2 failed steps...
+            if err > 1.0 and n % 2 == 0:
+                # Dramatically decrease stepsize (by 1 order of magnitude)
+                self.h = self.h / 10.0
+
+            else:
+                # Factor to alter steppsize by (shrink if step not accurate, grow otherwise)
+                factor = calc_factor(
+                    self.h,
+                    self.h_old,
+                    err,
+                    self.err_old,
+                    self.min_factor,
+                    self.max_factor,
+                    self.safety,
+                )
+                self.h = factor * self.h
 
             # All errors are within tolerance, solution has converged at this step
             if err < 1.0:
