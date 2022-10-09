@@ -27,7 +27,7 @@ from robertson_integration import get_constraint, save_data
 from calc_error import linear_error
 
 HAIRER_Y0 = np.array([1.0, 0.0, 0.0])
-HOCHBRUCH_T_SPAN = (0.0, 400)
+HOCHBRUCH_T_SPAN = (0.0, 400.0)
 
 
 def integate_robertson(
