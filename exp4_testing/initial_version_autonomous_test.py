@@ -14,7 +14,7 @@ if __name__ == "__main__":
     main(
         TEST_T0,
         10.0,
-        0.01,
+        None,
         np.array([TEST_Y0]),
         autonomous_test_function,
         test_solution,
