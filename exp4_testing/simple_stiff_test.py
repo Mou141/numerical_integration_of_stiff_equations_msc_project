@@ -37,7 +37,7 @@ def main():
 
     y_exact = STIFF_IVP.SolutionFunction(results.t)
 
-    plt.plot(results.t, results.y[0], "b0", label="Numerical Solution")
+    plt.plot(results.t, results.y[0], "bo", label="Numerical Solution")
     plt.plot(results.t, y_exact, label="Analytical Solution")
 
     plt.show()
