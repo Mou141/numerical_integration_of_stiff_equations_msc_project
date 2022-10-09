@@ -39,8 +39,6 @@ class EXP4(OdeSolver):
 
     # Order of the embedded method used to estimate the error
     error_estimation_order = 1.0
-    # Exponent used to calculate factor for new stepsize
-    error_estimation_exponent = -1.0 / (error_estimation_order + 1.0)
 
     def __init__(
         self,
@@ -56,7 +54,7 @@ class EXP4(OdeSolver):
         jac_sparsity=None,
         vectorized=False,
         autonomous=False,
-        max_factor=5.0,
+        max_factor=10.0,
         min_factor=0.2,
         safety=0.9,
         **extraneous
@@ -111,6 +109,9 @@ class EXP4(OdeSolver):
 
         if np.abs(self.h) < calc_min_step(t0, t_bound, self.direction):
             raise ValueError("First step is too small.")
+
+        self.h_old = None
+        self.err_old = None
 
         self.jac = self.handle_jac(jac, jac_sparsity, autonomous)
 
@@ -272,12 +273,17 @@ class EXP4(OdeSolver):
 
             # Factor to alter steppsize by (shrink if step not accurate, grow otherwise)
             factor = calc_factor(
+                self.h,
+                self.h_old,
                 err,
-                self.error_estimation_exponent,
-                self.max_factor,
+                self.err_old,
                 self.min_factor,
+                self.max_factor,
                 self.safety,
             )
+
+            self.h_old = self.h
+            self.err_old = self.err
 
             self.h = factor * self.h
 

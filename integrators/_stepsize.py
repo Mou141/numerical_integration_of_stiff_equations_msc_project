@@ -55,16 +55,23 @@ def stepsize_check(h, t, t_bound, direction):
         return h
 
 
-def calc_factor(err, error_exponent, max_factor, min_factor, safety):
-    """Returns the factor for calculating the new stepsize: safety * (err ** error_exponent).
-    Returned value will be at least min_factor and at most max_factor."""
+def calc_factor(h, h_old, err, err_old, min_factor, max_factor, safety):
+    """Calculates the factor to change the stepsize by according to the method used by Radau5."""
 
-    if err == 0.0:
-        return max_factor
+    if err == 0.0 or err_old is None or h_old is None:
+        multiplier = 1.0
 
-    factor = safety * (err**error_exponent)
+    else:
+        multiplier = np.abs(h / h_old) * ((err_old / err) ** 0.25)
 
-    if err < 1.0:
-        return min(max_factor, factor)
+    multiplier = min(1.0, multiplier)
 
-    return max(min_factor, factor)
+    # Can ignore divide by 0 because np.inf will be handled by min()
+    with np.errstate(divide="ignore"):
+        factor = multiplier * (err**-0.25)
+
+    factor = max(min_factor, (factor * safety))
+
+    factor = min(max_factor, factor)
+
+    return factor
