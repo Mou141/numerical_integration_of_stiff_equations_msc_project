@@ -157,15 +157,20 @@ class EXP4(OdeSolver):
         return jac_wrapper
 
     @staticmethod
-    def _embedded_error_step(y0, h, k_3, k_4, k_5, k_6, k_7):
-        """Performs a step of the embedded method used for error calculation."""
+    def _embedded_error_step_1(y0, h, k_3, k_4, k_5, k_6, k_7):
+        """Performs a step of the first embedded method used for error calculation (equation 5.9 in Hochbruch et. al.)."""
         return y0 + h * (
             k_3 + (-0.5 * k_4) + ((-2.0 / 3.0) + k_5) + (0.5 * k_6) + (0.5 * k_7)
         )
 
+    @staticmethod
+    def _embedded_error_step_2(y0, h, k_1, k_2, k_4, k_7):
+        """Performs a step of ths second embedded method used for error calculations (equation 5.10 in Hochbruch et. al.)."""
+        return y0 + h * ((-k_1) + (2.0 * k_2) - k_4 + k_7)
+
     @classmethod
     def _calc_step(cls, fun, A, h, y0):
-        """Performs a step of the exp4 method and the embedded error calculation method."""
+        """Performs a step of the exp4 method and tof both embedded error calculation methods."""
         # Reused values
         hA = h * A
         phi_1_3 = phi_step_jacob_hA(hA, (1.0 / 3.0))
@@ -202,10 +207,11 @@ class EXP4(OdeSolver):
 
         y1 = y0 + h * (k_3 + k_4 - ((4.0 / 3.0) * k_5) + k_6 + ((1.0 / 6.0) * k_7))
 
-        # Perform embedded error step
-        y_err = cls._embedded_error_step(y0, h, k_3, k_4, k_5, k_6, k_7)
+        # Perform embedded error steps
+        y_err_1 = cls._embedded_error_step_1(y0, h, k_3, k_4, k_5, k_6, k_7)
+        y_err_2 = cls._embedded_error_step_2(y0, h, k_1, k_2, k_4, k_7)
 
-        return y1, y_err
+        return y1, y_err_1, y_err_2
 
     @staticmethod
     def add_dependency(fun, t, y):
@@ -259,16 +265,21 @@ class EXP4(OdeSolver):
 
             t_new = self.t + self.h
 
-            # Perform one step of exp4 and one step of embedded error method
-            y_new, y_err = self._calc_step(fun, A, self.h, y_old)
+            # Perform one step of exp4 and one step of the embedded error methods
+            y_new, y_err_1, y_err_2 = self._calc_step(fun, A, self.h, y_old)
 
             # If all values of y_new are within tolerance, err < 1
             # If any values are above tolerance, err > 1
             if self.autonomous:
-                err = error_norm(y_new, y_err, y_old, self.atol, self.rtol)
+                err = error_norm(y_new, y_err_1, y_err_2, y_old, self.atol, self.rtol)
             else:
                 err = error_norm(
-                    y_new[0:-1], y_err[0:-1], y_old[0:-1], self.atol, self.rtol
+                    y_new[0:-1],
+                    y_err_1[0:-1],
+                    y_err_2[0:-1],
+                    y_old[0:-1],
+                    self.atol,
+                    self.rtol,
                 )
 
             # Factor to alter steppsize by (shrink if step not accurate, grow otherwise)

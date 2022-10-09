@@ -1,9 +1,6 @@
 """Contains helper functions for adaptive stepsize selection."""
 import numpy as np
 
-# RMS norm
-from scipy.integrate._ivp.common import norm
-
 
 def calc_min_step(t, t_bound, direction, factor=10.0):
     """Determines the smallest possible step that can be taken at this point.
@@ -31,15 +28,17 @@ def local_tolerance_scale(y_new, y_old, atol, rtol):
     return atol + (np.maximum(np.abs(y_new), np.abs(y_old)) * rtol)
 
 
-def local_error(y_new, y_err):
-    """Returns the linear error of each component of y."""
-    return y_new - y_err
+def local_error(y_new, y_err_1, y_err_2):
+    """Returns the minimum absolute error of each component of y."""
+    return np.minimum(np.abs(y_new - y_err_1), np.abs(y_new - y_err_2))
 
 
-def error_norm(y_new, y_err, y_old, atol, rtol):
-    """RMS norm of error."""
-    return norm(
-        local_error(y_new, y_err) / local_tolerance_scale(y_new, y_old, atol, rtol)
+def error_norm(y_new, y_err_1, y_err_2, y_old, atol, rtol):
+    """< 1 where If all errors are below tolerance.
+    > 1 if at least one error is above tolerance."""
+    return np.max(
+        local_error(y_new, y_err_1, y_err_2)
+        / local_tolerance_scale(y_new, y_old, atol, rtol)
     )
 
 
