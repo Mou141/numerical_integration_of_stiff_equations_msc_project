@@ -263,6 +263,9 @@ class EXP4(OdeSolver):
             # Make sure stepsize won't take integrator beyond end of bounds
             self.h = stepsize_check(self.h, self.t, self.t_bound, self.direction)
 
+            # Max sure stepsize is smaller than maximum
+            self.h = self.direction * min(self.max_step, np.abs(self.h))
+
             t_new = self.t + self.h
 
             # Perform one step of exp4 and one step of the embedded error methods
