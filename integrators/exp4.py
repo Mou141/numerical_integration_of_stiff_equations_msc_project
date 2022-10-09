@@ -54,7 +54,7 @@ class EXP4(OdeSolver):
         jac_sparsity=None,
         vectorized=False,
         autonomous=False,
-        max_factor=5.0,
+        max_factor=10.0,
         min_factor=0.2,
         safety=0.9,
         **extraneous
