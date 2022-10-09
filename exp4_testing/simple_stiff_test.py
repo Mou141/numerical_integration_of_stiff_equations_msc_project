@@ -41,3 +41,7 @@ def main():
     plt.plot(results.t, y_exact, label="Analytical Solution")
 
     plt.show()
+
+
+if __name__ == "__main__":
+    main()
