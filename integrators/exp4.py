@@ -285,6 +285,9 @@ class EXP4(OdeSolver):
                     self.rtol,
                 )
 
+            if np.isnan(err):
+                return False, "NaN in error calculation. Stepsize may be too small."
+
             # Factor to alter steppsize by (shrink if step not accurate, grow otherwise)
             factor = calc_factor(
                 self.h,

@@ -34,7 +34,7 @@ def integate_robertson(
     min_factor=0.2,
     safety=0.9,
     atol=1e-6,
-    rtol=1e-6,
+    rtol=1e-3,
 ):
     """Integrates the Robertson Chemical Kinetics IVP with the integrators.exp4.EXP4 integrator."""
 
@@ -63,7 +63,7 @@ def integate_robertson(
     )
 
     if not results.success:
-        print("Integration failed.", file=sys.stderr)
+        print("Integration failed: '{0}'.".format(results.message), file=sys.stderr)
         sys.exit(1)
 
     print("Integration Complete.")
