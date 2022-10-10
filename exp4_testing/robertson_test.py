@@ -78,7 +78,7 @@ def integate_robertson(
 
 
 def main():
-    t, y = integate_robertson(y0=HAIRER_Y0, t_bounds=HOCHBRUCH_T_SPAN)
+    t, y = integate_robertson(t_bounds=HOCHBRUCH_T_SPAN)
 
     constraint = get_constraint(y)
     lin_err = linear_error(constraint, 1.0)
