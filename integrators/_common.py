@@ -17,7 +17,7 @@ def phi(z):
         return (expm(z) - 1.0) / z
 
     else:
-        return np.matmul((expm(z) - 1.0), pinv(z))
+        return np.matmul((expm(z) - np.eye(z.shape[0])), pinv(z))
 
 
 def phi_step_jacob(h, A, j=1.0):
