@@ -8,7 +8,7 @@ from robertson_test import PARENT_PATH, PRELIM_PATH, HOCHBRUCH_T_SPAN
 sys.path.extend([str(PARENT_PATH), str(PRELIM_PATH)])
 
 from integrators import exp4
-from robertson_ivp import initial_value_problem, get_random_y0
+from robertson_ivp import initial_value_problem, get_safe_random_y0
 
 from scipy.integrate import solve_ivp
 
@@ -25,7 +25,7 @@ def main():
     y0 = None
 
     while not success:
-        y0 = get_random_y0()
+        y0 = get_safe_random_y0()
 
         print("Trying: {0}...".format(y0))
 
