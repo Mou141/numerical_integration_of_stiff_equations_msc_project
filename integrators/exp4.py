@@ -32,7 +32,7 @@ class EXP4(OdeSolver):
         jac, optional: This method does not support specifying the Jacobian. Values other than None will raise a ValueError.
         jac_sparsity, optional: If None, the Jacobian matrix is not sparse. If a matrix is passsed defining the sparsity structure of the jacobian, this is used to speed up computation (i.e. most elements of matrix will be known to be 0).
         vectorized, optional: True if fun is implemented as a vectorized function (defaults to False).
-        autonomous, optional: True if fun(t, y) depends only on y (defaults to False). Setting to True if fun(t, y) is autonomous will increase execution speed but not accuracy.
+        autonomous, optional: True if fun(t, y) depends only on y (defaults to True). Setting to True if fun(t, y) is autonomous will increase execution speed but not accuracy.
         max_factor, optional: Maximum amount by which stepsize may increase after a successful step (defaults to 10.0).
         min_factor, optional: Minimum amount stepsize can shrink by after an unsuccessful step (defaults to 0.2).
         safety, optional: Scaling factor for calculating new stepsizes. Factor to shrink calculated stepsizes to increase convergence rate. Should be < 1 (defaults to 0.9)."""
@@ -53,7 +53,7 @@ class EXP4(OdeSolver):
         jac=None,
         jac_sparsity=None,
         vectorized=False,
-        autonomous=False,
+        autonomous=True,
         max_factor=10.0,
         min_factor=0.2,
         safety=0.9,
