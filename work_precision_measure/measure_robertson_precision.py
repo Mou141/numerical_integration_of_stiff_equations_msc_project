@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 N = 10
-T_SPAN = (0.0, 400.0)
+T_SPAN = (0.0, 1.0e4)
 
 RTOL_RANGE = np.array(
     [1.0e-12, 1.0e-11, 1.0e-10, 1.0e-9, 1.0e-8, 1.0e-7, 1.0e-6, 1.0e-5, 1.0e-4, 1.0e-3]
