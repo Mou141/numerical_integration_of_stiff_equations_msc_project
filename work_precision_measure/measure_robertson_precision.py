@@ -11,7 +11,7 @@ from robertson_ivp import TEST_IVP
 import matplotlib.pyplot as plt
 import numpy as np
 
-N = 5
+N = 10
 T_SPAN = (0.0, 400.0)
 
 RTOL_RANGE = np.array(
