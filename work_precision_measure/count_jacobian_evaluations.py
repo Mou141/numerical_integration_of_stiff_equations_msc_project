@@ -33,6 +33,8 @@ def measure_all_methods(methods, t_span, rtol_range):
 
             out[method_name] = njevs
 
+    return out
+
 
 def main():
     results = measure_all_methods(METHODS, T_SPAN, RTOL_RANGE)
