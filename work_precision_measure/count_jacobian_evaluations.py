@@ -11,7 +11,7 @@ from scipy.integrate import solve_ivp
 def measure_all_methods(methods, t_span, rtol_range):
     out = {}
 
-    for method_name, method_class in methods.items():
+    for method_name, method_class in methods:
         njevs = np.empty(shape=rtol_range.shape, dtype=int)
 
         for i, rtol in enumerate(rtol_range):
